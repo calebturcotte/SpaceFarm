@@ -13,7 +13,7 @@
         android:layout_marginTop="183dp"
         android:layout_marginEnd="63dp"
         android:layout_marginRight="63dp"
-        android:text="I like Tony"
+        android:text="@string/moneybar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,7 +25,7 @@
         android:layout_marginLeft="62dp"
         android:layout_marginTop="173dp"
         android:onClick="click"
-        android:text="Farm1"
+        android:text="@string/farm1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,7 +37,7 @@
         android:layout_marginLeft="61dp"
         android:layout_marginTop="51dp"
         android:onClick="click"
-        android:text="Farm2"
+        android:text="@string/farm2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/farm" />
 
@@ -49,7 +49,7 @@
         android:layout_marginLeft="161dp"
         android:layout_marginBottom="153dp"
         android:onClick="click"
-        android:text="Enable autofarm"
+        android:text="@string/autoon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -62,7 +62,7 @@
         android:layout_marginTop="36dp"
         android:layout_marginBottom="69dp"
         android:onClick="click"
-        android:text="Disable Autofarm"
+        android:text="@string/autooff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/permafarm"
@@ -76,7 +76,7 @@
         android:layout_marginLeft="80dp"
         android:layout_marginBottom="240dp"
         android:onClick="click"
-        android:text="Upgrade"
+        android:text="@string/upgrade"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -88,7 +88,7 @@
         android:layout_marginRight="60dp"
         android:layout_marginBottom="40dp"
         android:onClick="click"
-        android:text="Sell"
+        android:text="@string/sell"
         app:layout_constraintBottom_toTopOf="@+id/permafarm"
         app:layout_constraintEnd_toEndOf="parent" />
 

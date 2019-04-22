@@ -27,37 +27,44 @@ public class Farm {
      * @return the money that the farm contains, either the scale itself or the farm value if enabled
      */
     public Integer contains(){
+        int mod = (int) Math.pow(modifier,0.8);
         if(upkeep) {
-            return money * scale * modifier + scale*modifier;
+            return money * scale * mod + scale*mod;
         }
 
-        return scale*modifier;
+        return scale*mod;
     }
 
     /**
      * enables the auto collect in the farm
      */
     public void enable(){
+        if(!upkeep) {
             upkeep = true;
 
-        time.schedule(
-                new java.util.TimerTask() {
-                    @Override
-                    public void run(){
-                        money ++;
-                    }
-                },0, 2000
-        );
+
+                time.schedule(
+                        new java.util.TimerTask() {
+                            @Override
+                            public void run() {
+                                money++;
+                            }
+                        }, 0, 2000
+                );
 
 
+
+        }
     }
 
     /**
      * disables the auto farm
      */
     public void disable(){
-        upkeep = false;
-        time.cancel();
+        if(upkeep) {
+            upkeep = false;
+            time.cancel();
+        }
     }
 
     /**
