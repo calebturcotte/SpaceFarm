@@ -18,24 +18,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/farm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="62dp"
-        android:layout_marginLeft="62dp"
-        android:layout_marginTop="173dp"
-        android:onClick="click"
-        android:text="@string/farm1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
         android:id="@+id/farm2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="61dp"
         android:layout_marginLeft="61dp"
-        android:layout_marginTop="51dp"
+        android:layout_marginTop="43dp"
         android:onClick="click"
         android:text="@string/farm2"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,11 +62,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
         android:layout_marginLeft="80dp"
-        android:layout_marginBottom="240dp"
+        android:layout_marginTop="21dp"
         android:onClick="click"
         android:text="@string/upgrade"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reset" />
 
     <Button
         android:id="@+id/sell"
@@ -91,5 +79,31 @@
         android:text="@string/sell"
         app:layout_constraintBottom_toTopOf="@+id/permafarm"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/reset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="115dp"
+        android:layout_marginLeft="115dp"
+        android:layout_marginTop="54dp"
+        android:onClick="click"
+        android:text="Reset"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/farm2" />
+
+    <ImageButton
+        android:id="@+id/farm"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="61dp"
+        android:layout_marginLeft="61dp"
+        android:layout_marginTop="61dp"
+        android:background="#00000000"
+        android:onClick="click"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/planet1" />
 
 </android.support.constraint.ConstraintLayout>
