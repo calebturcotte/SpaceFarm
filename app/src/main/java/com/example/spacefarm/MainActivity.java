@@ -4,11 +4,17 @@ package com.example.spacefarm;
 
 
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -19,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     TextView view;
     Farm farm1, farm2;
     boolean boughtfarm2;
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -37,8 +44,37 @@ public class MainActivity extends AppCompatActivity {
         money = settings.getInt("money", money);
         view.setText(String.valueOf(money));
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //Toast.makeText(this, "Selected Item: " + item.getTitle(), Toast.LENGTH_SHORT).show();
+        switch (item.getItemId()) {
+            case R.id.reset:
+                money = 0;
+                boughtfarm2 = false;
+                view.setText(String.valueOf(money));
+                saveCash();
+                return true;
+            case R.id.copy_item:
+                // do your code
+                return true;
+            case R.id.print_item:
+                // do your code
+                return true;
+            case R.id.share_item:
+                // do your code
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
     public void  click(View view2) {
 
         if(view2.getId() == R.id.farm) {

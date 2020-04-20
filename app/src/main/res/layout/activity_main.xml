@@ -6,14 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:layout_width="310dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/ic_moneybar"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/money"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="183dp"
-        android:layout_marginEnd="63dp"
-        android:layout_marginRight="63dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
         android:text="@string/moneybar"
+        app:fontFamily="sans-serif-medium"
+        android:textColor="@android:color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -62,11 +75,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
         android:layout_marginLeft="80dp"
-        android:layout_marginTop="21dp"
+        android:layout_marginTop="123dp"
         android:onClick="click"
         android:text="@string/upgrade"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reset" />
+        app:layout_constraintTop_toBottomOf="@+id/farm2" />
 
     <Button
         android:id="@+id/sell"
@@ -80,18 +93,6 @@
         app:layout_constraintBottom_toTopOf="@+id/permafarm"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/reset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="115dp"
-        android:layout_marginLeft="115dp"
-        android:layout_marginTop="54dp"
-        android:onClick="click"
-        android:text="Reset"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/farm2" />
-
     <ImageButton
         android:id="@+id/farm"
         android:layout_width="100dp"
@@ -99,11 +100,34 @@
         android:layout_marginStart="61dp"
         android:layout_marginLeft="61dp"
         android:layout_marginTop="61dp"
-        android:background="#00000000"
+        android:background="@drawable/planet1"
         android:onClick="click"
         android:scaleType="fitXY"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/planet1" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="402dp"
+        android:layout_height="66dp"
+        android:background="@drawable/toolbar"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/toolbarTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="?attr/actionBarSize"
+            android:layout_marginRight="?attr/actionBarSize"
+            android:gravity="center"
+            android:text="@string/options"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </android.support.v7.widget.Toolbar>
 
 </android.support.constraint.ConstraintLayout>
