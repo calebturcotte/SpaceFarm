@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Farm> farm;
     boolean boughtfarm2;
     MediaPlayer music;
+    boolean isplaying;
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +61,18 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //add music to our app
-        music = MediaPlayer.create(MainActivity.this,R.raw.placeholder);
+
+        music = MediaPlayer.create(MainActivity.this,R.raw.spacefarmmaintheme);
         music.setLooping(true);
-        music.start();
+
+        isplaying = settings.getBoolean("isplaying",isplaying);
+        ImageView musicSetting = (ImageView) findViewById(R.id.soundView);
+        if(!isplaying){
+            musicSetting.setBackgroundResource(R.drawable.ic_music_on);
+            music.start();
+        } else {
+            musicSetting.setBackgroundResource(R.drawable.ic_music_off);
+        }
 
         ImageView farmbutton = (ImageView) findViewById(R.id.farm1);
         farmbutton.setOnTouchListener(new FarmTouch(farmbutton, view, farm.get(0), context));
@@ -150,6 +160,41 @@ public class MainActivity extends AppCompatActivity {
             boughtfarm2 = false;
         }
         view.setText(String.valueOf(money));
+    }
+
+
+    public void music(View v){
+
+        if(!isplaying){
+            v.setBackgroundResource(R.drawable.ic_music_off);
+            music.pause();
+        } else {
+            v.setBackgroundResource(R.drawable.ic_music_on);
+            music.seekTo(0);
+            music.start();
+        }
+        isplaying = !isplaying;
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean("isplaying",isplaying);
+        editor.apply();
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(!isplaying)music.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(!isplaying)music.pause();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        if(!isplaying)music.start();
     }
 
     public void saveCash(){
