@@ -1,12 +1,11 @@
 <resources>
     <string name="app_name">SpaceFarm</string>
     <string name="moneybar">0</string>
-    <string name="farm1">Farm1</string>
-    <string name="farm2">Farm2</string>
     <string name="sell">Sell</string>
     <string name="upgrade">Upgrade</string>
     <string name="autoon">Enable Autofarm</string>
     <string name="autooff">Disable Autofarm</string>
     <string name="reset">Reset</string>
     <string name="options">Options</string>
+    <string name="buy">Buy Planet</string>
 </resources>
