@@ -9,30 +9,24 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Path;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -60,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer music;
     boolean isplaying;
     int satelliteselect;
+    FrameLayout layout;
     PopupMenu popup;
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -123,6 +118,31 @@ public class MainActivity extends AppCompatActivity {
             if (autofarm.get(i))farm.get(i).enable();
         }
 
+        //example code used to generate text on an imageview
+//        layout=(FrameLayout) findViewById(R.id.frameLayout1);
+//        layout.setOnTouchListener(new View.OnTouchListener() {
+//
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                int x=(int) event.getX();
+//                int  y=(int) event.getY();
+////                Log.d("Nzm", "x="+x+"y="+y);
+//                FrameLayout mFrame=new FrameLayout(MainActivity.this);
+//                TextView tv=new TextView(MainActivity.this);
+//
+//                if(x!=0 && y!=0)
+//                {
+//                    FrameLayout.LayoutParams mParams=new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+//                    mFrame.setLayoutParams(mParams);
+//                    mFrame.setPadding(x, y, 0, 0);
+//                    tv.setLayoutParams(mParams);
+//                    tv.setText("+1");
+//                    mFrame.addView(tv);
+//                    layout.addView(mFrame);
+//                }
+//                return true;
+//            }
+//        });
 //        findViewById(R.id.farm2).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            public void onGlobalLayout() {
 //                moveAnimation(findViewById(R.id.satellite1), findViewById(R.id.farm1));

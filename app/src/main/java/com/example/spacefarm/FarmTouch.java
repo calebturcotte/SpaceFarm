@@ -5,8 +5,13 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,9 +26,9 @@ public class FarmTouch implements View.OnTouchListener{
     private Farm farm;
     private long money;
     private SharedPreferences sharedPrefs;
-    private RelativeLayout applayout;
-    private RelativeLayout framelayout;
     private Boolean bought;
+    private Activity activity;
+    private AnimatorSet scaleDown;
 
     public FarmTouch(ImageView planet, TextView view, Farm farm, Context context, Activity activity, Boolean bought){
         this.planet = planet;
@@ -31,9 +36,8 @@ public class FarmTouch implements View.OnTouchListener{
         this.context = context.getApplicationContext();
         this.sharedPrefs = context.getSharedPreferences(PREFS_NAME, 0);
         this.farm = farm;
-        applayout = new RelativeLayout(context);
-        framelayout = (RelativeLayout) activity.findViewById(R.id.zoomView);
         this.bought = bought;
+        this.activity = activity;
 
     }
     public boolean onTouch(View v, MotionEvent event) {
@@ -46,27 +50,19 @@ public class FarmTouch implements View.OnTouchListener{
                         "scaleY", 0.9f);
                 scaleDownX.setDuration(100);
                 scaleDownY.setDuration(100);
-                AnimatorSet scaleDown = new AnimatorSet();
+                scaleDown = new AnimatorSet();
                 scaleDown.play(scaleDownX).with(scaleDownY);
-                scaleDown.start();
+                //scaleDown.start();
                 if(bought) {
                     money = MainActivity.money;
-                    money += farm.contains();
+                    int earnings = farm.contains();
+                    money += earnings;
                     farm.reset();//resets any money that might be inside the farm
                     saveCash();//saves the money to shared preferences
                     moneydisplay.setText(String.valueOf(money));
+                    createText(earnings,event);
+                    scaleDown.start();
                 }
-                //popup text for money earned
-//                RelativeLayout.LayoutParams mParams=new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-//                TextView popuptext = new TextView(context);
-//                int x = (int) event.getX();
-//                int y = (int) event.getY();
-//                applayout.setLayoutParams(mParams);
-//                applayout.setPadding(x,y,0,0);
-//                popuptext.setLayoutParams(mParams);
-//                popuptext.setText(String.valueOf(money));
-//                applayout.addView(popuptext);
-//                framelayout.addView(applayout);
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -78,9 +74,9 @@ public class FarmTouch implements View.OnTouchListener{
                 scaleDownY2.setDuration(100);
 
                 AnimatorSet scaleDown2 = new AnimatorSet();
-                scaleDown2.play(scaleDownX2).with(scaleDownY2);
+                scaleDown.play(scaleDownX2).with(scaleDownY2);
 
-                scaleDown2.start();
+                scaleDown.start();
                 break;
         }
         return true;
@@ -97,5 +93,53 @@ public class FarmTouch implements View.OnTouchListener{
      */
     public void buyFarm(){
         bought = !bought;
+    }
+
+    public void createText(int earnings,MotionEvent event){
+        final ConstraintLayout framelayout = activity.findViewById(R.id.zoomView);
+        final FrameLayout applayout = new FrameLayout(activity);
+        ConstraintLayout.LayoutParams mParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT*2);
+        final TextView popuptext = new TextView(activity);
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+        int planetx = (int) planet.getX();
+        int planety = (int) planet.getY();
+        //popup text for money earned
+        if (x != 0 && y != 0) {
+            applayout.setLayoutParams(mParams);
+            applayout.setPadding(x + planetx, y + planety, 0, 0);
+            popuptext.setLayoutParams(mParams);
+            String gain = "+"+earnings;
+            popuptext.setText(gain);
+            popuptext.setTextColor(Color.parseColor("#39FF14"));
+            applayout.addView(popuptext);
+            framelayout.addView(applayout);
+
+            Animation animSlide = AnimationUtils.loadAnimation(activity.getApplicationContext(), R.anim.slide);
+            animSlide.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    popuptext.setVisibility(View.GONE);
+                    //Create handler on the current thread (UI thread)
+                    Handler h = new Handler();
+                    //Run a runnable after 100ms (after that time it is safe to remove the view)
+                    h.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            framelayout.removeView(applayout);
+
+                        }
+                    }, 100);
+                }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+
+            applayout.startAnimation(animSlide);
+        }
     }
 }
