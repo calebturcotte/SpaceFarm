@@ -6,170 +6,257 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <android.support.constraint.ConstraintLayout
         android:id="@+id/zoomView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/spacebackground">
 
+        <!--    guidelines used for layout-->
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/left_guideline6"
+            app:layout_constraintGuide_percent=".1"
+            android:orientation="vertical"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/left_guideline"
+            app:layout_constraintGuide_percent=".15"
+            android:orientation="vertical"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/left_guideline2"
+            app:layout_constraintGuide_percent=".35"
+            android:orientation="vertical"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/left_guideline3"
+            app:layout_constraintGuide_percent=".55"
+            android:orientation="vertical"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/left_guideline4"
+            app:layout_constraintGuide_percent=".60"
+            android:orientation="vertical"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/left_guideline5"
+            app:layout_constraintGuide_percent=".90"
+            android:orientation="vertical"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_guideline5"
+            app:layout_constraintGuide_percent=".28"
+            android:orientation="horizontal"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_guideline4"
+            app:layout_constraintGuide_percent=".11"
+            android:orientation="horizontal"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_guideline6"
+            app:layout_constraintGuide_percent=".13"
+            android:orientation="horizontal"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_guideline2"
+            app:layout_constraintGuide_percent=".60"
+            android:orientation="horizontal"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_guideline3"
+            app:layout_constraintGuide_percent=".45"
+            android:orientation="horizontal"/>
+        <android.support.constraint.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_guideline"
+            app:layout_constraintGuide_percent=".75"
+            android:orientation="horizontal"/>
+
 
         <ImageView
             android:id="@+id/farm1"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.2"
+            app:layout_constraintWidth_percent="0.19"
             app:layout_constraintHeight_percent="0.1"
-            android:layout_marginStart="68dp"
-            android:layout_marginLeft="68dp"
-            android:layout_marginTop="100dp"
             android:adjustViewBounds="true"
-            android:background="@drawable/planet1"
+            android:src="@drawable/planet1"
+            android:background="@null"
             android:scaleX="1"
             android:scaleY="1"
 
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/farm2"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_marginTop="50dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/ic_planet_1_final"
-            android:contentDescription="@string/planet2"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintEnd_toStartOf="@+id/satellite2"
-            app:layout_constraintTop_toBottomOf="@+id/satellite1" />
+            app:layout_constraintStart_toStartOf="@id/left_guideline"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline6" />
 
         <ImageView
             android:id="@+id/farm3"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_marginStart="230dp"
-            android:layout_marginLeft="230dp"
-            android:layout_marginTop="350dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.23"
+            app:layout_constraintHeight_percent="0.13"
             android:adjustViewBounds="true"
-            android:background="@drawable/ic_planet_2_final"
+            android:src="@drawable/ic_planet_1_final"
+            android:background="@null"
+            android:contentDescription="@string/planet2"
             android:scaleX="1"
             android:scaleY="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/farm4"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_marginBottom="141dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/ic_planet_3_final"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/satellite4" />
+            app:layout_constraintStart_toStartOf="@id/left_guideline2"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline5" />
 
         <ImageView
             android:id="@+id/farm5"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_marginTop="80dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.23"
+            app:layout_constraintHeight_percent="0.13"
             android:adjustViewBounds="true"
-            android:background="@drawable/planet1"
+            android:src="@drawable/ic_planet_2_final"
+            android:background="@null"
             android:scaleX="1"
             android:scaleY="1"
-            app:layout_constraintEnd_toStartOf="@+id/satellite5"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/farm6"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="300dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/planet1"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-        <ImageView
-            android:id="@+id/farm7"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="100dp"
-            android:layout_marginStart="100dp"
-            android:layout_marginTop="400dp"
-            android:adjustViewBounds="true"
-            android:background="@drawable/planet1"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintStart_toStartOf="@id/left_guideline3"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline3" />
 
         <ImageView
             android:id="@+id/farm8"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="500dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:adjustViewBounds="true"
-            android:background="@drawable/planet1"
+            android:src="@drawable/ic_planet_3_final"
+            android:background="@null"
+            android:scaleX="1"
+            android:scaleY="1"
+            app:layout_constraintStart_toStartOf="@id/left_guideline4"
+            app:layout_constraintTop_toTopOf="@+id/bottom_guideline"
+            app:layout_constraintHeight_percent="0.14"
+            app:layout_constraintWidth_percent="0.25"
+            tools:layout_editor_absoluteY="500dp" />
+
+        <ImageView
+            android:id="@+id/farm2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.21"
+            app:layout_constraintHeight_percent="0.11"
+            android:adjustViewBounds="true"
+            android:src="@drawable/planet1"
+            android:background="@null"
+            android:scaleX="1"
+            android:scaleY="1"
+            app:layout_constraintStart_toStartOf="@+id/left_guideline4"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline4" />
+
+        <ImageView
+            android:id="@+id/farm4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.2"
+            app:layout_constraintHeight_percent="0.1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/planet1"
+            android:background="@null"
+            android:scaleX="1"
+            android:scaleY="1"
+            app:layout_constraintStart_toStartOf="@id/left_guideline6"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline3"/>
+
+        <ImageView
+            android:id="@+id/farm6"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.16"
+            app:layout_constraintHeight_percent="0.09"
+            android:layout_marginStart="148dp"
+            android:layout_marginLeft="148dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/planet1"
+            android:background="@null"
             android:scaleX="1"
             android:scaleY="1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline2" />
+
+        <ImageView
+            android:id="@+id/farm7"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.23"
+            app:layout_constraintHeight_percent="0.13"
+            android:layout_marginStart="68dp"
+            android:layout_marginLeft="68dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/planet1"
+            android:background="@null"
+            android:scaleX="1"
+            android:scaleY="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline" />
 
         <ImageView
             android:id="@+id/satellite1"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="140dp"
-            android:layout_marginLeft="140dp"
-            android:layout_marginTop="100dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.1"
+            app:layout_constraintHeight_percent="0.1"
             android:clickable="true"
             android:focusable="true"
             android:onClick="showPopup"
             android:rotation="45"
             android:src="@drawable/ic_harvester"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-        <ImageView
-            android:id="@+id/satellite2"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="240dp"
-            android:layout_marginLeft="240dp"
-            android:layout_marginTop="230dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:rotation="45"
-            android:src="@drawable/ic_harvester"
-            android:onClick="showPopup"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintStart_toEndOf="@id/farm1"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline6"/>
         <ImageView
             android:id="@+id/satellite3"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="320dp"
-            android:layout_marginLeft="320dp"
-            android:layout_marginTop="350dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.1"
+            app:layout_constraintHeight_percent="0.1"
             android:clickable="true"
             android:focusable="true"
             android:rotation="45"
             android:src="@drawable/ic_harvester"
             android:onClick="showPopup"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintStart_toEndOf="@id/farm3"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline5"/>
+        <ImageView
+            android:id="@+id/satellite5"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.1"
+            app:layout_constraintHeight_percent="0.1"
+            android:clickable="true"
+            android:focusable="true"
+            android:rotation="45"
+            android:src="@drawable/ic_harvester"
+            android:onClick="showPopup"
+            app:layout_constraintStart_toEndOf="@id/farm5"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline3"/>
 
         <ImageView
-            android:id="@+id/satellite4"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="500dp"
+            android:id="@+id/satellite8"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.1"
+            app:layout_constraintHeight_percent="0.1"
             android:layout_marginEnd="1dp"
             android:layout_marginRight="1dp"
             android:clickable="true"
@@ -177,14 +264,15 @@
             android:onClick="showPopup"
             android:rotation="45"
             android:src="@drawable/ic_harvester"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/farm8"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline" />
 
         <ImageView
-            android:id="@+id/satellite5"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="110dp"
+            android:id="@+id/satellite2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.1"
+            app:layout_constraintHeight_percent="0.1"
             android:layout_marginEnd="21dp"
             android:layout_marginRight="21dp"
             android:clickable="true"
@@ -192,50 +280,50 @@
             android:onClick="showPopup"
             android:rotation="45"
             android:src="@drawable/ic_harvester"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/farm2"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline4" />
+
+        <ImageView
+            android:id="@+id/satellite4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.1"
+            app:layout_constraintHeight_percent="0.1"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="showPopup"
+            android:rotation="45"
+            android:src="@drawable/ic_harvester"
+            app:layout_constraintStart_toEndOf="@+id/farm4"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline3" />
+
         <ImageView
             android:id="@+id/satellite6"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="70dp"
-            android:layout_marginLeft="70dp"
-            android:layout_marginTop="300dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.1"
+            app:layout_constraintHeight_percent="0.1"
             android:clickable="true"
             android:focusable="true"
+            android:onClick="showPopup"
             android:rotation="45"
             android:src="@drawable/ic_harvester"
-            android:onClick="showPopup"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintStart_toEndOf="@id/farm6"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline2" />
+
         <ImageView
             android:id="@+id/satellite7"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="160dp"
-            android:layout_marginLeft="160dp"
-            android:layout_marginTop="400dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.1"
+            app:layout_constraintHeight_percent="0.1"
             android:clickable="true"
             android:focusable="true"
+            android:onClick="showPopup"
             android:rotation="45"
             android:src="@drawable/ic_harvester"
-            android:onClick="showPopup"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-        <ImageView
-            android:id="@+id/satellite8"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="100dp"
-            android:layout_marginLeft="100dp"
-            android:layout_marginTop="500dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:rotation="45"
-            android:src="@drawable/ic_harvester"
-            android:onClick="showPopup"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintStart_toEndOf="@id/farm7"
+            app:layout_constraintTop_toTopOf="@id/bottom_guideline" />
 
 
         <!--        <ImageButton-->
@@ -284,7 +372,8 @@
     <ImageView
         android:layout_width="0dp"
         app:layout_constraintWidth_percent="0.8"
-        android:layout_height="51dp"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.06"
         android:layout_marginTop="2dp"
         android:layout_marginEnd="1dp"
         android:layout_marginRight="1dp"
@@ -293,18 +382,24 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 
+    <android.support.constraint.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_guideline"
+        app:layout_constraintGuide_percent=".025"
+        android:orientation="horizontal"/>
+
     <TextView
         android:id="@+id/money"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
         android:text="@string/moneybar"
         android:textColor="@android:color/black"
         app:fontFamily="sans-serif-medium"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/text_guideline" />
 
     <ImageView
         android:id="@+id/soundView"

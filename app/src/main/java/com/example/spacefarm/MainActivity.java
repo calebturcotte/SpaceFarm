@@ -6,8 +6,12 @@ package com.example.spacefarm;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Path;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -33,7 +37,6 @@ import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 
 
@@ -51,11 +54,11 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Boolean> boughtfarm;
     ArrayList<FarmTouch> touchcontrol;
     ArrayList<Boolean> autofarm;
+    ImageView[] farmbutton;
     MediaPlayer music;
     boolean isplaying;
     int satelliteselect;
-    FrameLayout layout;
-    PopupMenu popup;
+
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -76,11 +79,20 @@ public class MainActivity extends AppCompatActivity {
             modifier.add(settings.getInt("modifier"+i,numbought));
             autofarm.add(settings.getBoolean("auto"+i,autofarmis));
         }
-
+        farmbutton =new ImageView[] {findViewById(R.id.farm1), findViewById(R.id.farm2), findViewById(R.id.farm3), findViewById(R.id.farm4),
+                findViewById(R.id.farm5), findViewById(R.id.farm6), findViewById(R.id.farm7), findViewById(R.id.farm8),};
         boughtfarm.add(true);
         for (int i = 1; i < 8; i++){
             boolean farmbought = false;
             boughtfarm.add(settings.getBoolean("boughtfarm"+i, farmbought));
+            if (!boughtfarm.get(i)){
+                ColorMatrix matrix = new ColorMatrix();
+                matrix.setSaturation(0);  //0 means grayscale
+                ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
+                farmbutton[i].setColorFilter(cf);
+                //if we wanted to fade
+                //farmbutton[i].setImageAlpha(128);   // 128 = 0.5
+            }
         }
         farm.add(new Farm(1, modifier.get(0)));
         farm.add(new Farm(2, modifier.get(1)));
@@ -109,8 +121,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             musicSetting.setBackgroundResource(R.drawable.ic_music_off);
         }
-        ImageView[] farmbutton ={findViewById(R.id.farm1), findViewById(R.id.farm2), findViewById(R.id.farm3), findViewById(R.id.farm4),
-                findViewById(R.id.farm5), findViewById(R.id.farm6), findViewById(R.id.farm7), findViewById(R.id.farm8),} ;
+
         touchcontrol = new ArrayList<>(8);
         for (int i = 0; i < 8; i++){
             touchcontrol.add(new FarmTouch(farmbutton[i],view, farm.get(i), context, MainActivity.this, boughtfarm.get(i)));
@@ -118,31 +129,7 @@ public class MainActivity extends AppCompatActivity {
             if (autofarm.get(i))farm.get(i).enable();
         }
 
-        //example code used to generate text on an imageview
-//        layout=(FrameLayout) findViewById(R.id.frameLayout1);
-//        layout.setOnTouchListener(new View.OnTouchListener() {
-//
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                int x=(int) event.getX();
-//                int  y=(int) event.getY();
-////                Log.d("Nzm", "x="+x+"y="+y);
-//                FrameLayout mFrame=new FrameLayout(MainActivity.this);
-//                TextView tv=new TextView(MainActivity.this);
-//
-//                if(x!=0 && y!=0)
-//                {
-//                    FrameLayout.LayoutParams mParams=new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-//                    mFrame.setLayoutParams(mParams);
-//                    mFrame.setPadding(x, y, 0, 0);
-//                    tv.setLayoutParams(mParams);
-//                    tv.setText("+1");
-//                    mFrame.addView(tv);
-//                    layout.addView(mFrame);
-//                }
-//                return true;
-//            }
-//        });
+
 //        findViewById(R.id.farm2).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            public void onGlobalLayout() {
 //                moveAnimation(findViewById(R.id.satellite1), findViewById(R.id.farm1));
@@ -167,21 +154,47 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.reset:
-                money = 0;
-                view.setText(String.valueOf(money));
-                saveCash();
-                for (int i = 0; i < modifier.size(); i++){
-                    farm.get(i).sell();
-                    saveModifier(i,farm.get(i).getModifier());
-                    farm.get(i).disable();
-                    autofarm.set(i,false);
-                    saveAuto(i,autofarm.get(i));
-                }
-                for (int i = 1; i < touchcontrol.size(); i++){
-                    if(boughtfarm.get(i))touchcontrol.get(i).buyFarm();
-                    boughtfarm.set(i, false);
-                    saveBought(i,boughtfarm.get(i));
-                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setCancelable(true);
+                builder.setTitle("Restart the Game?");
+                builder.setMessage("This will sell all your planets and reset your money to 0.");
+                //Negative Button is on left
+                builder.setNegativeButton("Confirm",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                money = 0;
+                                view.setText(String.valueOf(money));
+                                saveCash();
+                                for (int i = 0; i < modifier.size(); i++){
+                                    farm.get(i).sell();
+                                    saveModifier(i,farm.get(i).getModifier());
+                                    farm.get(i).disable();
+                                    autofarm.set(i,false);
+                                    saveAuto(i,autofarm.get(i));
+                                }
+                                for (int i = 1; i < touchcontrol.size(); i++){
+                                    if(boughtfarm.get(i))touchcontrol.get(i).buyFarm();
+                                    boughtfarm.set(i, false);
+                                    saveBought(i,boughtfarm.get(i));
+                                    if (!boughtfarm.get(i)){
+                                        ColorMatrix matrix = new ColorMatrix();
+                                        matrix.setSaturation(0);  //0 means grayscale
+                                        ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
+                                        farmbutton[i].setColorFilter(cf);
+                                    }
+                                }
+                            }
+                        });
+                builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -281,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         Button buyButton = (Button) popupView.findViewById(R.id.buy);
-        String buyString = "Buy ("+ farm.get(satelliteselect).getScale()*10+"$)";
+        String buyString = "Buy ("+ (int)(farm.get(satelliteselect).getScale()*Math.pow(4,satelliteselect+1))+"$)";
         buyButton.setText(buyString);
         popupView.findViewById(R.id.upgrade).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -295,7 +308,30 @@ public class MainActivity extends AppCompatActivity {
         popupView.findViewById(R.id.sell).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sellFarm(popupView,satelliteselect,toast,text, popupWindow);
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                builder.setCancelable(true);
+                String sell = "Sell Planet #" + (satelliteselect+1) + "?";
+                builder.setTitle(sell);
+                //builder.setMessage("Message");
+                //Negative Button is on left
+                builder.setNegativeButton("Confirm",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                sellFarm(popupView, satelliteselect, toast, text, popupWindow);
+                            }
+                        });
+                builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                popupWindow.dismiss();
+
+
             }
         });
         Button sellButton = (Button) popupView.findViewById(R.id.sell);
@@ -339,8 +375,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void buyFarm(View v, int satelliteselect, Toast toast, TextView text, PopupWindow popupWindow){
         String buy;
-        if(money >= farm.get(satelliteselect).getScale()*10){
-            money = money - farm.get(satelliteselect).getScale()*10;
+        if(money >= farm.get(satelliteselect).getScale()*Math.pow(4,satelliteselect+1)){
+            money = money - (long)(farm.get(satelliteselect).getScale()*Math.pow(4,satelliteselect+1));
             boughtfarm.set(satelliteselect,true);
             touchcontrol.get(satelliteselect).buyFarm();
             saveBought(satelliteselect,boughtfarm.get(satelliteselect));
@@ -348,6 +384,10 @@ public class MainActivity extends AppCompatActivity {
             buy = "Planet #"+(satelliteselect+1)+" was bought";
             v.setVisibility(View.GONE);
             popupWindow.dismiss();
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(1);  //1 means identity colour
+            ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
+            farmbutton[satelliteselect].setColorFilter(cf);
         }
         else {
             buy = "Not enough funds to buy this Planet";
