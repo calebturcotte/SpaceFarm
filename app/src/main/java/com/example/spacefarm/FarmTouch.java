@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.view.MotionEvent;
@@ -14,7 +15,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
@@ -29,6 +29,7 @@ public class FarmTouch implements View.OnTouchListener{
     private Boolean bought;
     private Activity activity;
     private AnimatorSet scaleDown;
+    private MediaPlayer soundeffect;
 
     public FarmTouch(ImageView planet, TextView view, Farm farm, Context context, Activity activity, Boolean bought){
         this.planet = planet;
@@ -38,6 +39,7 @@ public class FarmTouch implements View.OnTouchListener{
         this.farm = farm;
         this.bought = bought;
         this.activity = activity;
+        soundeffect = MediaPlayer.create(context, R.raw.buttonpress);
 
     }
     public boolean onTouch(View v, MotionEvent event) {
@@ -62,6 +64,9 @@ public class FarmTouch implements View.OnTouchListener{
                     moneydisplay.setText(String.valueOf(money));
                     createText(earnings,event);
                     scaleDown.start();
+                    if(!MainActivity.isplaying) {
+                        soundeffect.start();
+                    }
                 }
                 break;
 

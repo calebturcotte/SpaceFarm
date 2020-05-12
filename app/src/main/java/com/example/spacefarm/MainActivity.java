@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Path;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
@@ -56,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Boolean> autofarm;
     ImageView[] farmbutton;
     MediaPlayer music;
-    boolean isplaying;
+    int currentvolume;
+    public static boolean isplaying;
     int satelliteselect;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             modifier.add(settings.getInt("modifier"+i,numbought));
             autofarm.add(settings.getBoolean("auto"+i,autofarmis));
         }
-        farmbutton =new ImageView[] {findViewById(R.id.farm1), findViewById(R.id.farm2), findViewById(R.id.farm3), findViewById(R.id.farm4),
+        farmbutton = new ImageView[] {findViewById(R.id.farm1), findViewById(R.id.farm2), findViewById(R.id.farm3), findViewById(R.id.farm4),
                 findViewById(R.id.farm5), findViewById(R.id.farm6), findViewById(R.id.farm7), findViewById(R.id.farm8),};
         boughtfarm.add(true);
         for (int i = 1; i < 8; i++){
@@ -112,7 +115,9 @@ public class MainActivity extends AppCompatActivity {
 
         music = MediaPlayer.create(MainActivity.this,R.raw.spacefarmmaintheme);
         music.setLooping(true);
-
+        int tempvolume = 80;
+        currentvolume = settings.getInt("bgvolume", tempvolume);
+        music.setVolume((float)currentvolume/100, (float)currentvolume/100);
         isplaying = settings.getBoolean("isplaying",isplaying);
         ImageView musicSetting = findViewById(R.id.soundView);
         if(!isplaying){
@@ -196,6 +201,55 @@ public class MainActivity extends AppCompatActivity {
                 dialog.show();
 
                 return true;
+            case R.id.options:
+                // create the popup window
+                LayoutInflater inflater = (LayoutInflater)
+                        getSystemService(LAYOUT_INFLATER_SERVICE);
+                assert inflater != null;
+                final View optionsView = inflater.inflate(R.layout.options, null);
+                int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                boolean focusable = true; // lets taps outside the popup also dismiss it
+                final PopupWindow optionsWindow = new PopupWindow(optionsView, width, height, focusable);
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    optionsWindow.setElevation(20);
+                }
+                // show the popup window
+                // which view you pass in doesn't matter, it is only used for the window token
+                optionsWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+                optionsView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return true;
+                    }
+                });
+                final AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+//                int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+//                int curVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                int maxVolume = 100;
+                SeekBar volControl = (SeekBar)optionsView.findViewById(R.id.volumeBar);
+                volControl.setMax(maxVolume);
+                volControl.setProgress(currentvolume);
+                volControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onStopTrackingTouch(SeekBar arg0) {
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar arg0) {
+                    }
+
+                    @Override
+                    public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
+//                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, arg1, 0);
+                        music.setVolume((float)arg1/100,(float)arg1/100);
+                        currentvolume = arg1;
+                        saveBgVolume(arg1);
+                    }
+                });
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -268,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
             popupWindow.setElevation(20);
         }
         // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
+        // which view you pass in doesn't matter, it is only used for the window token
         popupWindow.showAtLocation(view, Gravity.TOP | Gravity.LEFT, (int)v.getX() + 200, (int)v.getY());
 
         popupView.setOnTouchListener(new View.OnTouchListener() {
@@ -277,6 +331,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
         LayoutInflater toastinflater = getLayoutInflater();
         View layout = toastinflater.inflate(R.layout.custom_toast,
                 (ViewGroup) findViewById(R.id.custom_toast_container));
@@ -510,6 +565,13 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("auto"+index,autoEnabled);
+        editor.apply();
+    }
+
+    public void saveBgVolume(int value){
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("bgvolume",value);
         editor.apply();
     }
 

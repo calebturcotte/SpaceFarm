@@ -12,4 +12,5 @@
     <string name="planet1">Planet #1</string>
     <string name="planet2">Planet #2</string>
     <string name="planet3">Planet #3</string>
+    <string name="bgvolume">Background Volume</string>
 </resources>
