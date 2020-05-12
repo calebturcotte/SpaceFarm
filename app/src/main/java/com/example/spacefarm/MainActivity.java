@@ -17,9 +17,12 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import android.os.CountDownTimer;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,14 +34,24 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdCallback;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+
 import java.util.ArrayList;
 
 
@@ -61,6 +74,10 @@ public class MainActivity extends AppCompatActivity {
     int currentvolume;
     public static boolean isplaying;
     int satelliteselect;
+    private RewardedVideoAd mRewardedVideoAd;
+    private RewardedAd rewardedAd;
+    CountDownTimer countDownTimer;
+    boolean timerisrunning;
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -70,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+//            @Override
+//            public void onInitializationComplete(InitializationStatus initializationStatus) {
+//            }
+//        });
+        timerisrunning = false;
+        loadAd();
+
 
         //initialize all content for the farms and money obtained
         farm = new ArrayList<>(8);
@@ -149,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
 //                findViewById(R.id.farm2).getViewTreeObserver().removeOnGlobalLayoutListener(this);
 //            }
 //        });
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -525,6 +551,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         if(!isplaying)music.start();
+        loadAd();
     }
 
     /**
@@ -607,5 +634,106 @@ public class MainActivity extends AppCompatActivity {
             animator.setRepeatMode(ValueAnimator.RESTART);
             animator.start();
         }
+    }
+
+    public void loadAd(){
+        rewardedAd = new RewardedAd(this,
+                "ca-app-pub-3940256099942544/5224354917");
+        RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
+            @Override
+            public void onRewardedAdLoaded() {
+                super.onRewardedAdLoaded();
+                // Ad successfully loaded.
+                //Toast.makeText(MainActivity.this, "adloaded", Toast.LENGTH_SHORT).show();
+                 if (!timerisrunning)findViewById(R.id.button).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onRewardedAdFailedToLoad(int errorCode) {
+                super.onRewardedAdFailedToLoad(errorCode);
+                // Ad failed to load.
+            }
+
+
+        };
+        rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+    }
+
+    public void showAd(View view){
+        if(this.rewardedAd.isLoaded()){
+            RewardedAdCallback callback = new RewardedAdCallback(){
+                @Override
+                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                    //reward code
+                    Toast.makeText(MainActivity.this, "reward earned", Toast.LENGTH_SHORT).show();
+                    startTimer(1);
+                }
+
+                @Override
+                public void onRewardedAdFailedToShow(int i) {
+                    super.onRewardedAdFailedToShow(i);
+                    //code for if ad fails to load
+                }
+
+                @Override
+                public void onRewardedAdClosed() {
+                    super.onRewardedAdClosed();
+                    loadAd();
+                    Toast.makeText(MainActivity.this, "ad closed", Toast.LENGTH_SHORT).show();
+                }
+            };
+            this.rewardedAd.show(this, callback);
+
+        }
+    }
+
+    /**
+     * Starts our booster timer for extra cash earning
+     * @param minuti : number of minutes for the timer
+     */
+    private void startTimer(final int minuti) {
+        final ProgressBar barTimer = (ProgressBar) findViewById(R.id.barTimer);
+        final TextView textTimer = (TextView) findViewById(R.id.textView);
+        findViewById(R.id.button).setVisibility(View.GONE);
+        timerisrunning = true;
+        for (int i = 0; i < 8; i++){
+            farm.get(i).setBooster(2);
+        }
+
+        countDownTimer = new CountDownTimer(60 * minuti * 1000, 500) {
+            // 500 means, onTick function will be called at every 500 milliseconds
+
+            @Override
+            public void onTick(long leftTimeInMilliseconds) {
+                long seconds = leftTimeInMilliseconds / 1000;
+                double percent = seconds / (60.0 * minuti)*100;
+                barTimer.setProgress((int) percent);
+                textTimer.setText(String.format("%02d", seconds / 60) + ":" + String.format("%02d", seconds % 60));
+                // format the textview to show the easily readable format
+
+            }
+
+            @Override
+            public void onFinish() {
+//                if (textTimer.getText().equals("00:00")) {
+//                    textTimer.setText("");
+//                    timerisrunning = false;
+//                    findViewById(R.id.button).setVisibility(View.VISIBLE);
+//                    for (int i = 0; i < 8; i++){
+//                        farm.get(i).setBooster(1);
+//                    }
+//
+//                } else {
+//                    textTimer.setText("2:00");
+//                    barTimer.setProgress(60 * minuti);
+//                }
+                textTimer.setText("");
+                timerisrunning = false;
+                findViewById(R.id.button).setVisibility(View.VISIBLE);
+                for (int i = 0; i < 8; i++){
+                    farm.get(i).setBooster(1);
+                }
+            }
+        }.start();
     }
 }

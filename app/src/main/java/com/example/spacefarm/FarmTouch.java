@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Handler;
-import android.support.constraint.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -54,7 +54,6 @@ public class FarmTouch implements View.OnTouchListener{
                 scaleDownY.setDuration(100);
                 scaleDown = new AnimatorSet();
                 scaleDown.play(scaleDownX).with(scaleDownY);
-                //scaleDown.start();
                 if(bought) {
                     money = MainActivity.money;
                     int earnings = farm.contains();

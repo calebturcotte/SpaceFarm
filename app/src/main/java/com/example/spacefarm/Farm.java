@@ -15,6 +15,7 @@ public class Farm {
     private int modifier;
     private boolean upkeep;
     private Timer time;
+    private int booster;
 
 
     public Farm(int scale, int modifier){
@@ -23,6 +24,7 @@ public class Farm {
         time = new Timer();
         upkeep = false;
         this.modifier = modifier;
+        booster = 1;
     }
 
     /**
@@ -33,7 +35,7 @@ public class Farm {
             return money * scale * modifier + scale*modifier;
         }
 
-        return scale*modifier;
+        return scale*modifier*booster;
     }
 
     /**
@@ -124,5 +126,12 @@ public class Farm {
             return (upgradeCost() + scale*(101))/2;
         }
         return (upgradeCost() + scale)/2;
+    }
+
+    /**
+     * @param booster: the multiplier based on ad watched or bought boosters
+     */
+    void setBooster(int booster){
+        this.booster = booster;
     }
 }
