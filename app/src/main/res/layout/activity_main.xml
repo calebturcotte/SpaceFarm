@@ -385,11 +385,11 @@
         tools:ignore="ContentDescription" />
 
     <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/text_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/text_guideline"
-        app:layout_constraintGuide_percent=".025"
-        android:orientation="horizontal"/>
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.01" />
 
     <TextView
         android:id="@+id/money"
@@ -399,6 +399,7 @@
         android:layout_marginRight="24dp"
         android:text="@string/moneybar"
         android:textColor="@android:color/black"
+        android:textSize="18sp"
         app:fontFamily="sans-serif-medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/text_guideline" />
@@ -438,15 +439,16 @@
         android:layout_marginTop="70dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="49dp"
+        android:layout_height="48dp"
         android:layout_marginStart="17dp"
         android:layout_marginLeft="17dp"
         android:layout_marginTop="70dp"
-        android:text="Button"
         android:onClick="showAd"
+        android:text="2x"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

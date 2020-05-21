@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -72,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
     ImageView[] farmbutton;
     MediaPlayer music;
     int currentvolume;
+    int soundeffvolume;
     public static boolean isplaying;
     int satelliteselect;
-    private RewardedVideoAd mRewardedVideoAd;
     private RewardedAd rewardedAd;
     CountDownTimer countDownTimer;
     boolean timerisrunning;
@@ -101,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         modifier = new ArrayList<>(8);
         boughtfarm = new ArrayList<>(8);
         autofarm = new ArrayList<>(8);
+        touchcontrol = new ArrayList<>(8);
         for (int i = 0; i < 8; i++){
             int numbought = 1;
             boolean autofarmis = false;
@@ -122,26 +124,42 @@ public class MainActivity extends AppCompatActivity {
                 //farmbutton[i].setImageAlpha(128);   // 128 = 0.5
             }
         }
-        farm.add(new Farm(1, modifier.get(0)));
-        farm.add(new Farm(2, modifier.get(1)));
-        farm.add(new Farm(5, modifier.get(2)));
-        farm.add(new Farm(10, modifier.get(3)));
-        farm.add(new Farm(50, modifier.get(4)));
-        farm.add(new Farm(100, modifier.get(5)));
-        farm.add(new Farm(500, modifier.get(6)));
-        farm.add(new Farm(1000, modifier.get(7)));
+        findViewById(R.id.farm2).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            public void onGlobalLayout() {
+                farm.add(new Farm(1, modifier.get(0), farmbutton[0], MainActivity.this));
+                farm.add(new Farm(2, modifier.get(1), farmbutton[1], MainActivity.this));
+                farm.add(new Farm(5, modifier.get(2), farmbutton[2], MainActivity.this));
+                farm.add(new Farm(10, modifier.get(3), farmbutton[3], MainActivity.this));
+                farm.add(new Farm(50, modifier.get(4), farmbutton[4], MainActivity.this));
+                farm.add(new Farm(100, modifier.get(5), farmbutton[5], MainActivity.this));
+                farm.add(new Farm(500, modifier.get(6), farmbutton[6], MainActivity.this));
+                farm.add(new Farm(1000, modifier.get(7), farmbutton[7], MainActivity.this));
+
+                for (int i = 0; i < 8; i++){
+                    touchcontrol.add(new FarmTouch(farmbutton[i],view, farm.get(i), context, MainActivity.this, boughtfarm.get(i)));
+                    touchcontrol.get(i).setVolume(soundeffvolume);
+                    farmbutton[i].setOnTouchListener(touchcontrol.get(i));
+                    if (autofarm.get(i))farm.get(i).enable();
+                }
+                // don't forget to remove the listener to prevent being called again
+                // by future layout events:
+                findViewById(R.id.farm2).getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
         view = findViewById(R.id.money);
         money = settings.getLong("money", money);
         view.setText(String.valueOf(money));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //add music to our app
 
+        //add music to our app
         music = MediaPlayer.create(MainActivity.this,R.raw.spacefarmmaintheme);
         music.setLooping(true);
         int tempvolume = 80;
         currentvolume = settings.getInt("bgvolume", tempvolume);
+        soundeffvolume = settings.getInt("soundeffvolume", tempvolume);
         music.setVolume((float)currentvolume/100, (float)currentvolume/100);
         isplaying = settings.getBoolean("isplaying",isplaying);
         ImageView musicSetting = findViewById(R.id.soundView);
@@ -152,12 +170,8 @@ public class MainActivity extends AppCompatActivity {
             musicSetting.setBackgroundResource(R.drawable.ic_music_off);
         }
 
-        touchcontrol = new ArrayList<>(8);
-        for (int i = 0; i < 8; i++){
-            touchcontrol.add(new FarmTouch(farmbutton[i],view, farm.get(i), context, MainActivity.this, boughtfarm.get(i)));
-            farmbutton[i].setOnTouchListener(touchcontrol.get(i));
-            if (autofarm.get(i))farm.get(i).enable();
-        }
+
+
 
 
 //        findViewById(R.id.farm2).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -200,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
                                 for (int i = 0; i < modifier.size(); i++){
                                     farm.get(i).sell();
                                     saveModifier(i,farm.get(i).getModifier());
-                                    farm.get(i).disable();
                                     autofarm.set(i,false);
                                     saveAuto(i,autofarm.get(i));
                                 }
@@ -251,9 +264,6 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                 });
-                final AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
-//                int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-//                int curVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                 int maxVolume = 100;
                 SeekBar volControl = (SeekBar)optionsView.findViewById(R.id.volumeBar);
                 volControl.setMax(maxVolume);
@@ -269,10 +279,30 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
-//                        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, arg1, 0);
                         music.setVolume((float)arg1/100,(float)arg1/100);
                         currentvolume = arg1;
-                        saveBgVolume(arg1);
+                        saveVolume("bgvolume",arg1);
+                    }
+                });
+                SeekBar soundeffControl = (SeekBar)optionsView.findViewById(R.id.sound_effectBar);
+                soundeffControl.setMax(maxVolume);
+                soundeffControl.setProgress(soundeffvolume);
+                soundeffControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onStopTrackingTouch(SeekBar arg0) {
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar arg0) {
+                    }
+
+                    @Override
+                    public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
+                        for(int i = 0; i < 8; i++) {
+                            touchcontrol.get(i).setVolume(arg1);
+                        }
+                        soundeffvolume = arg1;
+                        saveVolume("soundeffvolume",arg1);
                     }
                 });
                 return true;
@@ -375,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         Button buyButton = (Button) popupView.findViewById(R.id.buy);
-        String buyString = "Buy ("+ (int)(farm.get(satelliteselect).getScale()*Math.pow(4,satelliteselect+1))+"$)";
+        String buyString = "Buy ("+ (int)(farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1))+"$)";
         buyButton.setText(buyString);
         popupView.findViewById(R.id.upgrade).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -456,8 +486,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void buyFarm(View v, int satelliteselect, Toast toast, TextView text, PopupWindow popupWindow){
         String buy;
-        if(money >= farm.get(satelliteselect).getScale()*Math.pow(4,satelliteselect+1)){
-            money = money - (long)(farm.get(satelliteselect).getScale()*Math.pow(4,satelliteselect+1));
+        if(money >= farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1)){
+            money = money - (long)(farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1));
             boughtfarm.set(satelliteselect,true);
             touchcontrol.get(satelliteselect).buyFarm();
             saveBought(satelliteselect,boughtfarm.get(satelliteselect));
@@ -510,6 +540,10 @@ public class MainActivity extends AppCompatActivity {
             boughtfarm.set(satelliteselect, false);
             touchcontrol.get(satelliteselect).buyFarm();
             saveBought(satelliteselect, boughtfarm.get(satelliteselect));
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(0);  //0 means grayscale
+            ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
+            farmbutton[satelliteselect].setColorFilter(cf);
         }
         saveAuto(satelliteselect, false);
         String sell = "Planet #"+ (satelliteselect+1) + " was sold.";
@@ -595,10 +629,11 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    public void saveBgVolume(int value){
+
+    public void saveVolume(String volume, int value){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putInt("bgvolume",value);
+        editor.putInt(volume,value);
         editor.apply();
     }
 
@@ -679,9 +714,11 @@ public class MainActivity extends AppCompatActivity {
                 public void onRewardedAdClosed() {
                     super.onRewardedAdClosed();
                     loadAd();
+                    if(!isplaying)music.start();
                     Toast.makeText(MainActivity.this, "ad closed", Toast.LENGTH_SHORT).show();
                 }
             };
+            if(!isplaying)music.pause();
             this.rewardedAd.show(this, callback);
 
         }
@@ -715,18 +752,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-//                if (textTimer.getText().equals("00:00")) {
-//                    textTimer.setText("");
-//                    timerisrunning = false;
-//                    findViewById(R.id.button).setVisibility(View.VISIBLE);
-//                    for (int i = 0; i < 8; i++){
-//                        farm.get(i).setBooster(1);
-//                    }
-//
-//                } else {
-//                    textTimer.setText("2:00");
-//                    barTimer.setProgress(60 * minuti);
-//                }
                 textTimer.setText("");
                 timerisrunning = false;
                 findViewById(R.id.button).setVisibility(View.VISIBLE);

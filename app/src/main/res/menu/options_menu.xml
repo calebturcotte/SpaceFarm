@@ -6,6 +6,8 @@
         android:title="@string/startover" />
     <item android:id="@+id/options"
         android:title="Options"/>
+    <item android:id="@+id/about"
+        android:title="About"/>
 
 
 </menu>

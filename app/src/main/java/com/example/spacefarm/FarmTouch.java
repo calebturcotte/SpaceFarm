@@ -115,7 +115,9 @@ public class FarmTouch implements View.OnTouchListener{
             popuptext.setLayoutParams(mParams);
             String gain = "+"+earnings;
             popuptext.setText(gain);
+            popuptext.setTextSize(20);
             popuptext.setTextColor(Color.parseColor("#39FF14"));
+            popuptext.setShadowLayer(10,0,0,Color.BLACK);
             applayout.addView(popuptext);
             framelayout.addView(applayout);
 
@@ -145,5 +147,13 @@ public class FarmTouch implements View.OnTouchListener{
 
             applayout.startAnimation(animSlide);
         }
+    }
+
+    /**
+     * sets the volume for sound effects
+     * @param volume: value from 0-100 for set sound effect volume
+     */
+    public void setVolume(int volume){
+        soundeffect.setVolume((float)volume/100, (float)volume/100);
     }
 }

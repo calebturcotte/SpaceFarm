@@ -13,4 +13,5 @@
     <string name="planet2">Planet #2</string>
     <string name="planet3">Planet #3</string>
     <string name="bgvolume">Background Volume</string>
+    <string name="sound_effect_volume">Sound Effects</string>
 </resources>

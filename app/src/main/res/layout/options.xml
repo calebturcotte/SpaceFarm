@@ -1,29 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="#62def8"
     android:orientation="vertical">
 
-
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:adjustViewBounds="true"
+        android:background="@drawable/ic_menu_bkgrnd"
+        android:scaleType="centerCrop" />
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/bgvolume"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black"
+            android:gravity="center_horizontal"/>
+
         <SeekBar
             android:id="@+id/volumeBar"
             android:layout_width="219dp"
-            android:layout_height="20dp"
-            />
+            android:layout_height="20dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sound_effect_volume"
+            android:textColor="@color/black"
+            android:gravity="center"/>
+
+        <SeekBar
+            android:id="@+id/sound_effectBar"
+            android:layout_width="219dp"
+            android:layout_height="20dp" />
+
     </LinearLayout>
 
 
-
-
-</LinearLayout>
+</FrameLayout>
