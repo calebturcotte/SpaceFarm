@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<!--test layout for scrolling view-->
+    <ScrollView
+        android:id="@+id/vScroll"
+        android:scaleX="1"
+        android:scaleY="1"
+        android:overScrollMode="never"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+        <HorizontalScrollView
+            android:id="@+id/hScroll"
+            android:scaleX="1"
+            android:scaleY="1"
+            android:overScrollMode="never"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+            <RelativeLayout
+                android:id="@+id/zoomView"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:adjustViewBounds="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/backgroundv2">
+
+                <ImageView
+                    android:id="@+id/planet7"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/ic_planet_1_final"
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginStart="50dp"
+                    android:layout_marginTop="400dp"/>
+
+                <ImageView
+                    android:id="@+id/satellite7"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_toRightOf="@id/planet7"
+                    android:layout_toEndOf="@id/planet7"
+                    android:layout_marginTop="400dp"
+                    android:src="@drawable/satellite" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet6"-->
+<!--                    android:layout_width="110dp"-->
+<!--                    android:layout_height="110dp"-->
+<!--                    android:src="@drawable/ic_planet_1_final"-->
+<!--                    android:layout_marginLeft="150dp"-->
+<!--                    android:layout_marginStart="150dp"-->
+<!--                    android:layout_marginTop="150dp"/>-->
+
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite6"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet6"-->
+<!--                    android:layout_toEndOf="@id/planet6"-->
+<!--                    android:layout_marginTop="150dp"-->
+<!--                    android:src="@drawable/satellite" />-->
+
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet8"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    android:src="@drawable/ic_planet_4"-->
+<!--                    android:layout_marginLeft="1000dp"-->
+<!--                    android:layout_marginStart="1000dp"-->
+<!--                    android:layout_marginTop="1200dp"-->
+<!--                    android:layout_marginBottom="100dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite8"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet8"-->
+<!--                    android:layout_toEndOf="@id/planet8"-->
+<!--                    android:layout_marginTop="1200dp"-->
+<!--                    android:src="@drawable/satellite"-->
+<!--                    android:layout_marginRight="50dp"-->
+<!--                    android:layout_marginEnd="50dp"  />-->
+
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet1"-->
+<!--                    android:layout_width="200dp"-->
+<!--                    android:layout_height="200dp"-->
+<!--                    android:src="@drawable/ic_planet_1_final"-->
+<!--                    android:layout_marginLeft="400dp"-->
+<!--                    android:layout_marginStart="400dp"-->
+<!--                    android:layout_marginTop="500dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite1"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet1"-->
+<!--                    android:layout_toEndOf="@id/planet1"-->
+<!--                    android:layout_marginTop="500dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet2"-->
+<!--                    android:layout_width="130dp"-->
+<!--                    android:layout_height="130dp"-->
+<!--                    android:src="@drawable/ic_planet_2_final"-->
+<!--                    android:layout_marginLeft="240dp"-->
+<!--                    android:layout_marginStart="240dp"-->
+<!--                    android:layout_marginTop="700dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite2"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet2"-->
+<!--                    android:layout_toEndOf="@id/planet2"-->
+<!--                    android:layout_marginTop="700dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet3"-->
+<!--                    android:layout_width="90dp"-->
+<!--                    android:layout_height="90dp"-->
+<!--                    android:src="@drawable/ic_planet_3_final"-->
+<!--                    android:layout_marginLeft="260dp"-->
+<!--                    android:layout_marginStart="260dp"-->
+<!--                    android:layout_marginTop="420dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite3"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet3"-->
+<!--                    android:layout_toEndOf="@id/planet3"-->
+<!--                    android:layout_marginTop="420dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet4"-->
+<!--                    android:layout_width="80dp"-->
+<!--                    android:layout_height="80dp"-->
+<!--                    android:src="@drawable/ic_planet_4"-->
+<!--                    android:layout_marginLeft="430dp"-->
+<!--                    android:layout_marginStart="430dp"-->
+<!--                    android:layout_marginTop="300dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite4"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet4"-->
+<!--                    android:layout_toEndOf="@id/planet4"-->
+<!--                    android:layout_marginTop="300dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet5"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    android:src="@drawable/ic_planet_1_final"-->
+<!--                    android:layout_marginLeft="630dp"-->
+<!--                    android:layout_marginStart="630dp"-->
+<!--                    android:layout_marginTop="250dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite5"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet5"-->
+<!--                    android:layout_toEndOf="@id/planet5"-->
+<!--                    android:layout_marginTop="250dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet9"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    android:src="@drawable/ic_planet_1_final"-->
+<!--                    android:layout_marginLeft="530dp"-->
+<!--                    android:layout_marginStart="530dp"-->
+<!--                    android:layout_marginTop="100dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite9"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet9"-->
+<!--                    android:layout_toEndOf="@id/planet9"-->
+<!--                    android:layout_marginTop="100dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet10"-->
+<!--                    android:layout_width="80dp"-->
+<!--                    android:layout_height="80dp"-->
+<!--                    android:src="@drawable/ic_planet_4"-->
+<!--                    android:layout_marginLeft="800dp"-->
+<!--                    android:layout_marginStart="800dp"-->
+<!--                    android:layout_marginTop="340dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite10"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet10"-->
+<!--                    android:layout_toEndOf="@id/planet10"-->
+<!--                    android:layout_marginTop="340dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet11"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    android:src="@drawable/ic_planet_1_final"-->
+<!--                    android:layout_marginLeft="950dp"-->
+<!--                    android:layout_marginStart="950dp"-->
+<!--                    android:layout_marginTop="250dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite11"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet11"-->
+<!--                    android:layout_toEndOf="@id/planet11"-->
+<!--                    android:layout_marginTop="250dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet12"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    android:src="@drawable/ic_planet_1_final"-->
+<!--                    android:layout_marginLeft="830dp"-->
+<!--                    android:layout_marginStart="830dp"-->
+<!--                    android:layout_marginTop="100dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite12"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet12"-->
+<!--                    android:layout_toEndOf="@id/planet12"-->
+<!--                    android:layout_marginTop="100dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet13"-->
+<!--                    android:layout_width="80dp"-->
+<!--                    android:layout_height="80dp"-->
+<!--                    android:src="@drawable/ic_planet_4"-->
+<!--                    android:layout_marginLeft="650dp"-->
+<!--                    android:layout_marginStart="650dp"-->
+<!--                    android:layout_marginTop="750dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite13"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet13"-->
+<!--                    android:layout_toEndOf="@id/planet13"-->
+<!--                    android:layout_marginTop="750dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet14"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    android:src="@drawable/ic_planet_1_final"-->
+<!--                    android:layout_marginLeft="970dp"-->
+<!--                    android:layout_marginStart="970dp"-->
+<!--                    android:layout_marginTop="600dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite14"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet14"-->
+<!--                    android:layout_toEndOf="@id/planet14"-->
+<!--                    android:layout_marginTop="600dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet15"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    android:src="@drawable/ic_planet_1_final"-->
+<!--                    android:layout_marginLeft="830dp"-->
+<!--                    android:layout_marginStart="830dp"-->
+<!--                    android:layout_marginTop="500dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite15"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet15"-->
+<!--                    android:layout_toEndOf="@id/planet15"-->
+<!--                    android:layout_marginTop="500dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet16"-->
+<!--                    android:layout_width="80dp"-->
+<!--                    android:layout_height="80dp"-->
+<!--                    android:src="@drawable/ic_planet_4"-->
+<!--                    android:layout_marginLeft="730dp"-->
+<!--                    android:layout_marginStart="730dp"-->
+<!--                    android:layout_marginTop="950dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite16"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet16"-->
+<!--                    android:layout_toEndOf="@id/planet16"-->
+<!--                    android:layout_marginTop="950dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet17"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    android:src="@drawable/ic_planet_1_final"-->
+<!--                    android:layout_marginLeft="970dp"-->
+<!--                    android:layout_marginStart="970dp"-->
+<!--                    android:layout_marginTop="850dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite17"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet17"-->
+<!--                    android:layout_toEndOf="@id/planet17"-->
+<!--                    android:layout_marginTop="850dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/planet18"-->
+<!--                    android:layout_width="100dp"-->
+<!--                    android:layout_height="100dp"-->
+<!--                    android:src="@drawable/ic_planet_1_final"-->
+<!--                    android:layout_marginLeft="830dp"-->
+<!--                    android:layout_marginStart="830dp"-->
+<!--                    android:layout_marginTop="730dp" />-->
+<!--                <ImageView-->
+<!--                    android:id="@+id/satellite18"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:layout_toRightOf="@id/planet18"-->
+<!--                    android:layout_toEndOf="@id/planet18"-->
+<!--                    android:layout_marginTop="730dp"-->
+<!--                    android:src="@drawable/satellite"/>-->
+
+            </RelativeLayout>
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:layout_width="4000dp"-->
+<!--                android:layout_height="4000dp"-->
+<!--                android:background="@drawable/backgroundv2"-->
+<!--                xmlns:app="http://schemas.android.com/apk/res-auto">-->
+<!--                <ImageView-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="0dp"-->
+<!--                    app:layout_constraintHeight_percent="0.1"-->
+<!--                    android:adjustViewBounds="true"-->
+<!--                    android:background="@null"-->
+<!--                    android:scaleX="1"-->
+<!--                    android:scaleY="1"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    android:src="@drawable/planet1"/>-->
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        </HorizontalScrollView>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/toolbar"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:collapseIcon="@android:drawable/ic_btn_speak_now"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/toolbarTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="?attr/actionBarSize"
+                android:layout_marginRight="?attr/actionBarSize"
+                android:gravity="center"
+                android:text="@string/options"
+                android:textColor="@android:color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </androidx.appcompat.widget.Toolbar>
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginRight="1dp"
+            android:background="@drawable/ic_moneypanel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.06"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.8"
+            tools:ignore="ContentDescription" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/text_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.01" />
+
+        <TextView
+            android:id="@+id/money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:text="@string/moneybar"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:fontFamily="sans-serif-medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_guideline" />
+
+        <ImageView
+            android:id="@+id/soundView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/ic_music_on"
+            android:onClick="music"
+            app:layout_constraintHeight_percent="0.06"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.1" />
+
+        <ProgressBar
+            android:id="@+id/barTimer"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="70dp"
+            android:progressDrawable="@drawable/circular_progress_bar"
+            app:layout_constraintHeight_percent="0.06"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.1" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textColor="#39FF14"
+            app:layout_constraintHeight_percent="0.06"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barTimer"
+            app:layout_constraintWidth_percent="0.1" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="70dp"
+            android:background="@drawable/ic_2x2"
+            android:onClick="showAd"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

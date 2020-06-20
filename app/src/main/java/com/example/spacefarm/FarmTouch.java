@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.os.Handler;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import android.view.MotionEvent;
@@ -29,7 +28,6 @@ public class FarmTouch implements View.OnTouchListener{
     private Boolean bought;
     private Activity activity;
     private AnimatorSet scaleDown;
-    private MediaPlayer soundeffect;
 
     public FarmTouch(ImageView planet, TextView view, Farm farm, Context context, Activity activity, Boolean bought){
         this.planet = planet;
@@ -39,19 +37,17 @@ public class FarmTouch implements View.OnTouchListener{
         this.farm = farm;
         this.bought = bought;
         this.activity = activity;
-        soundeffect = MediaPlayer.create(context, R.raw.buttonpress);
 
     }
     public boolean onTouch(View v, MotionEvent event) {
-//
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(planet,
                         "scaleX", 0.9f);
                 ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(planet,
                         "scaleY", 0.9f);
-                scaleDownX.setDuration(100);
-                scaleDownY.setDuration(100);
+                scaleDownX.setDuration(1);
+                scaleDownY.setDuration(1);
                 scaleDown = new AnimatorSet();
                 scaleDown.play(scaleDownX).with(scaleDownY);
                 if(bought) {
@@ -60,12 +56,13 @@ public class FarmTouch implements View.OnTouchListener{
                     money += earnings;
                     farm.reset();//resets any money that might be inside the farm
                     saveCash();//saves the money to shared preferences
-                    moneydisplay.setText(String.valueOf(money));
+                    moneydisplay.setText(MainActivity.calculateCash(MainActivity.money));
                     createText(earnings,event);
                     scaleDown.start();
-                    if(!MainActivity.isplaying) {
-                        soundeffect.start();
-                    }
+                    MainActivity.playPlanetSound(true);
+                }
+                else {
+                    MainActivity.playPlanetSound(false);
                 }
                 break;
 
@@ -74,8 +71,8 @@ public class FarmTouch implements View.OnTouchListener{
                         planet, "scaleX", 1f);
                 ObjectAnimator scaleDownY2 = ObjectAnimator.ofFloat(
                         planet, "scaleY", 1f);
-                scaleDownX2.setDuration(100);
-                scaleDownY2.setDuration(100);
+                scaleDownX2.setDuration(1);
+                scaleDownY2.setDuration(1);
 
                 AnimatorSet scaleDown2 = new AnimatorSet();
                 scaleDown.play(scaleDownX2).with(scaleDownY2);
@@ -149,11 +146,4 @@ public class FarmTouch implements View.OnTouchListener{
         }
     }
 
-    /**
-     * sets the volume for sound effects
-     * @param volume: value from 0-100 for set sound effect volume
-     */
-    public void setVolume(int volume){
-        soundeffect.setVolume((float)volume/100, (float)volume/100);
-    }
 }

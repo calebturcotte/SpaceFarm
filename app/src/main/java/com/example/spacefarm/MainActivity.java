@@ -9,11 +9,11 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Path;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.CountDownTimer;
 import android.view.Gravity;
@@ -43,16 +44,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.ads.reward.RewardedVideoAd;
-import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-
 import java.util.ArrayList;
 
 
@@ -65,91 +60,70 @@ public class MainActivity extends AppCompatActivity {
     public Context context;
     static long money;
     TextView view;
-    ArrayList<Farm> farm;
-    ArrayList<Integer> modifier;
-    ArrayList<Boolean> boughtfarm;
-    ArrayList<FarmTouch> touchcontrol;
-    ArrayList<Boolean> autofarm;
-    ImageView[] farmbutton;
-    MediaPlayer music;
+    static MediaPlayer music, satellitesound, planetsound1, planetsound2;
     int currentvolume;
-    int soundeffvolume;
+    static int soundeffvolume;
     public static boolean isplaying;
-    int satelliteselect;
     private RewardedAd rewardedAd;
     CountDownTimer countDownTimer;
-    boolean timerisrunning;
+    static boolean timerisrunning;
+    int totalplanets;
+    Universe1 universe1;
+    Universe2 universe2;
+    Universe3 universe3;
+    int currentUniverse;
+    SharedPreferences settings;
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        context = getApplicationContext();
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-//            @Override
-//            public void onInitializationComplete(InitializationStatus initializationStatus) {
+        context = getApplicationContext();
+        settings = getSharedPreferences(PREFS_NAME, 0);
+        totalplanets = 8;
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        view = findViewById(R.id.money);
+        int tempvolume = 80;
+        soundeffvolume = settings.getInt("soundeffvolume", tempvolume);
+        satellitesound = MediaPlayer.create(MainActivity.this, R.raw.satellitepress);
+        satellitesound.setVolume((float)soundeffvolume/100, (float)soundeffvolume/100);
+        planetsound1 = MediaPlayer.create(MainActivity.this, R.raw.buttonpress);
+        planetsound1.setVolume((float)soundeffvolume/100, (float)soundeffvolume/100);
+        planetsound2 = MediaPlayer.create(MainActivity.this, R.raw.buttondull);
+        planetsound2.setVolume((float)soundeffvolume/100, (float)soundeffvolume/100);
+        currentUniverse = 0;
+        universe1 = new Universe1(settings, MainActivity.this, context, view);
+        universe2 = new Universe2(settings, MainActivity.this, context, view);
+        universe3 = new Universe3(settings, MainActivity.this, context, view);
+        ft.replace(R.id.placeholder, universe1);
+        ft.commit();
+
+//        final SpaceBackground spaceBackground = new SpaceBackground((ScrollView) findViewById(R.id.vScroll), (HorizontalScrollView) findViewById(R.id.hScroll));
+//        findViewById(R.id.vScroll).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            public void onGlobalLayout() {
+//                ScrollView vScroll = findViewById(R.id.vScroll);
+//                HorizontalScrollView hScroll = findViewById(R.id.hScroll);
+//                vScroll.scrollTo(0, vScroll.getBottom()/2);
+//                hScroll.scrollTo(hScroll.getWidth()/2, 0);
+//                vScroll.setOnTouchListener(spaceBackground);
+////                hScroll.setOnTouchListener(spaceBackground);
+////                vScroll.setScaleX(2f);
+////                vScroll.setScaleY(2f);
+////                RelativeLayout.LayoutParams mParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+////                findViewById(R.id.zoomView).setLayoutParams(mParams);
+//                findViewById(R.id.vScroll).getViewTreeObserver().removeOnGlobalLayoutListener(this);
 //            }
 //        });
+
+
         timerisrunning = false;
         loadAd();
 
-
-        //initialize all content for the farms and money obtained
-        farm = new ArrayList<>(8);
-        modifier = new ArrayList<>(8);
-        boughtfarm = new ArrayList<>(8);
-        autofarm = new ArrayList<>(8);
-        touchcontrol = new ArrayList<>(8);
-        for (int i = 0; i < 8; i++){
-            int numbought = 1;
-            boolean autofarmis = false;
-            modifier.add(settings.getInt("modifier"+i,numbought));
-            autofarm.add(settings.getBoolean("auto"+i,autofarmis));
-        }
-        farmbutton = new ImageView[] {findViewById(R.id.farm1), findViewById(R.id.farm2), findViewById(R.id.farm3), findViewById(R.id.farm4),
-                findViewById(R.id.farm5), findViewById(R.id.farm6), findViewById(R.id.farm7), findViewById(R.id.farm8),};
-        boughtfarm.add(true);
-        for (int i = 1; i < 8; i++){
-            boolean farmbought = false;
-            boughtfarm.add(settings.getBoolean("boughtfarm"+i, farmbought));
-            if (!boughtfarm.get(i)){
-                ColorMatrix matrix = new ColorMatrix();
-                matrix.setSaturation(0);  //0 means grayscale
-                ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
-                farmbutton[i].setColorFilter(cf);
-                //if we wanted to fade
-                //farmbutton[i].setImageAlpha(128);   // 128 = 0.5
-            }
-        }
-        findViewById(R.id.farm2).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            public void onGlobalLayout() {
-                farm.add(new Farm(1, modifier.get(0), farmbutton[0], MainActivity.this));
-                farm.add(new Farm(2, modifier.get(1), farmbutton[1], MainActivity.this));
-                farm.add(new Farm(5, modifier.get(2), farmbutton[2], MainActivity.this));
-                farm.add(new Farm(10, modifier.get(3), farmbutton[3], MainActivity.this));
-                farm.add(new Farm(50, modifier.get(4), farmbutton[4], MainActivity.this));
-                farm.add(new Farm(100, modifier.get(5), farmbutton[5], MainActivity.this));
-                farm.add(new Farm(500, modifier.get(6), farmbutton[6], MainActivity.this));
-                farm.add(new Farm(1000, modifier.get(7), farmbutton[7], MainActivity.this));
-
-                for (int i = 0; i < 8; i++){
-                    touchcontrol.add(new FarmTouch(farmbutton[i],view, farm.get(i), context, MainActivity.this, boughtfarm.get(i)));
-                    touchcontrol.get(i).setVolume(soundeffvolume);
-                    farmbutton[i].setOnTouchListener(touchcontrol.get(i));
-                    if (autofarm.get(i))farm.get(i).enable();
-                }
-                // don't forget to remove the listener to prevent being called again
-                // by future layout events:
-                findViewById(R.id.farm2).getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        });
-
-        view = findViewById(R.id.money);
         money = settings.getLong("money", money);
-        view.setText(String.valueOf(money));
+        view.setText(calculateCash(money));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -157,9 +131,9 @@ public class MainActivity extends AppCompatActivity {
         //add music to our app
         music = MediaPlayer.create(MainActivity.this,R.raw.spacefarmmaintheme);
         music.setLooping(true);
-        int tempvolume = 80;
+
         currentvolume = settings.getInt("bgvolume", tempvolume);
-        soundeffvolume = settings.getInt("soundeffvolume", tempvolume);
+
         music.setVolume((float)currentvolume/100, (float)currentvolume/100);
         isplaying = settings.getBoolean("isplaying",isplaying);
         ImageView musicSetting = findViewById(R.id.soundView);
@@ -170,10 +144,7 @@ public class MainActivity extends AppCompatActivity {
             musicSetting.setBackgroundResource(R.drawable.ic_music_off);
         }
 
-
-
-
-
+//
 //        findViewById(R.id.farm2).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            public void onGlobalLayout() {
 //                moveAnimation(findViewById(R.id.satellite1), findViewById(R.id.farm1));
@@ -201,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.reset:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setCancelable(true);
+                builder.setIcon(R.drawable.ic_planet_7);
                 builder.setTitle("Restart the Game?");
                 builder.setMessage("This will sell all your planets and reset your money to 0.");
                 //Negative Button is on left
@@ -209,25 +181,11 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 money = 0;
-                                view.setText(String.valueOf(money));
+                                view.setText(calculateCash(money));
                                 saveCash();
-                                for (int i = 0; i < modifier.size(); i++){
-                                    farm.get(i).sell();
-                                    saveModifier(i,farm.get(i).getModifier());
-                                    autofarm.set(i,false);
-                                    saveAuto(i,autofarm.get(i));
-                                }
-                                for (int i = 1; i < touchcontrol.size(); i++){
-                                    if(boughtfarm.get(i))touchcontrol.get(i).buyFarm();
-                                    boughtfarm.set(i, false);
-                                    saveBought(i,boughtfarm.get(i));
-                                    if (!boughtfarm.get(i)){
-                                        ColorMatrix matrix = new ColorMatrix();
-                                        matrix.setSaturation(0);  //0 means grayscale
-                                        ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
-                                        farmbutton[i].setColorFilter(cf);
-                                    }
-                                }
+                                universe1.reset();
+                                universe2.reset();
+                                universe3.reset();
                             }
                         });
                 builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
@@ -298,14 +256,35 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
-                        for(int i = 0; i < 8; i++) {
-                            touchcontrol.get(i).setVolume(arg1);
-                        }
+                        //for(int i = 0; i < totalplanets; i++) {
+                            //touchcontrol.get(i).setVolume(arg1);
+                        satellitesound.setVolume((float)arg1/100,(float)arg1/100);
+                        planetsound1.setVolume((float)arg1/100,(float)arg1/100);
+                        planetsound2.setVolume((float)arg1/100,(float)arg1/100);
+//                            if(universe1.getView()!=null)universe1.setVolume((float)arg1);
+//                            if(universe2.getView()!=null)universe2.setVolume((float)arg1);
+                        //}
                         soundeffvolume = arg1;
                         saveVolume("soundeffvolume",arg1);
                     }
                 });
                 return true;
+            case R.id.about:
+                LayoutInflater inflater2 = (LayoutInflater)
+                        getSystemService(LAYOUT_INFLATER_SERVICE);
+                assert inflater2 != null;
+                final View optionsView2 = inflater2.inflate(R.layout.popup_about, null);
+                int width2 = LinearLayout.LayoutParams.WRAP_CONTENT;
+                int height2 = LinearLayout.LayoutParams.WRAP_CONTENT;
+                boolean focusable2 = true; // lets taps outside the popup also dismiss it
+                final PopupWindow optionsWindow2 = new PopupWindow(optionsView2, width2, height2, focusable2);
+
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    optionsWindow2.setElevation(20);
+                }
+                // show the popup window
+                // which view you pass in doesn't matter, it is only used for the window token
+                optionsWindow2.showAtLocation(view, Gravity.CENTER, 0, 0);
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -328,247 +307,6 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    /**
-     * Creates and handles click events for a pop up menu from the satellites
-     * @param v the View of the Main activity
-     */
-    public void showPopup(View v){
-        final View satelliteview = v;
-        RotateAnimation rotate = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotate.setDuration(1000);
-        rotate.setFillAfter(true);
-        rotate.setInterpolator(new LinearInterpolator());
-        v.startAnimation(rotate);
-        switch(v.getId()){
-            case R.id.satellite1:
-                satelliteselect = 0;
-                break;
-            case R.id.satellite2:
-                satelliteselect = 1;
-                break;
-            case R.id.satellite3:
-                satelliteselect = 2;
-                break;
-            case R.id.satellite4:
-                satelliteselect = 3;
-                break;
-            case R.id.satellite5:
-                satelliteselect = 4;
-                break;
-            case R.id.satellite6:
-                satelliteselect = 5;
-                break;
-            case R.id.satellite7:
-                satelliteselect = 6;
-                break;
-            case R.id.satellite8:
-                satelliteselect = 7;
-                break;
-        }
-        LayoutInflater inflater = (LayoutInflater)
-                getSystemService(LAYOUT_INFLATER_SERVICE);
-        final View popupView = inflater.inflate(R.layout.popup_menu, null);
-
-        // create the popup window
-        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            popupWindow.setElevation(20);
-        }
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window token
-        popupWindow.showAtLocation(view, Gravity.TOP | Gravity.LEFT, (int)v.getX() + 200, (int)v.getY());
-
-        popupView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
-
-        LayoutInflater toastinflater = getLayoutInflater();
-        View layout = toastinflater.inflate(R.layout.custom_toast,
-                (ViewGroup) findViewById(R.id.custom_toast_container));
-        final TextView text = layout.findViewById(R.id.text);
-        final Toast toast = new Toast(getApplicationContext());
-        toast.setGravity(Gravity.BOTTOM, 0, 0);
-        toast.setDuration(Toast.LENGTH_SHORT/2);
-        toast.setView(layout);
-
-        //add click options for the popup window buttons
-        popupView.findViewById(R.id.buy).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buyFarm(popupView,satelliteselect,toast,text, popupWindow);
-            }
-        });
-        Button buyButton = (Button) popupView.findViewById(R.id.buy);
-        String buyString = "Buy ("+ (int)(farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1))+"$)";
-        buyButton.setText(buyString);
-        popupView.findViewById(R.id.upgrade).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                upgradeFarm(popupView,satelliteselect,toast,text);
-            }
-        });
-        Button upgradeButton = (Button) popupView.findViewById(R.id.upgrade);
-        String upgradeString = "Upgrade ("+ farm.get(satelliteselect).upgradeCost()+"$)";
-        upgradeButton.setText(upgradeString);
-        popupView.findViewById(R.id.sell).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setCancelable(true);
-                String sell = "Sell Planet #" + (satelliteselect+1) + "?";
-                builder.setTitle(sell);
-                //builder.setMessage("Message");
-                //Negative Button is on left
-                builder.setNegativeButton("Confirm",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                sellFarm(popupView, satelliteselect, toast, text, popupWindow);
-                            }
-                        });
-                builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                popupWindow.dismiss();
-
-
-            }
-        });
-        Button sellButton = (Button) popupView.findViewById(R.id.sell);
-        String sellString = "Sell ("+ farm.get(satelliteselect).sellCost()+"$)";
-        sellButton.setText(sellString);
-        popupView.findViewById(R.id.auto).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autoFarm(v,satelliteselect,toast,text);
-            }
-        });
-        Button autoButton = (Button) popupView.findViewById(R.id.auto);
-        String autoString = "Farm automatically ("+ farm.get(satelliteselect).getScale()*100+"$)";
-        autoButton.setText(autoString);
-
-        if(boughtfarm.get(satelliteselect)){
-            popupView.findViewById(R.id.buy).setVisibility(View.GONE);
-            if(farm.get(satelliteselect).isAutoEnabled()){
-                popupView.findViewById(R.id.auto).setVisibility(View.GONE);
-            }
-        }
-        else {
-            popupView.findViewById(R.id.upgrade).setVisibility(View.GONE);
-            popupView.findViewById(R.id.sell).setVisibility(View.GONE);
-            popupView.findViewById(R.id.auto).setVisibility(View.GONE);
-        }
-
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                RotateAnimation rotate = new RotateAnimation(180, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                rotate.setDuration(1000);
-                rotate.setFillAfter(true);
-                rotate.setInterpolator(new LinearInterpolator());
-                satelliteview.startAnimation(rotate);
-            }
-        });
-
-    }
-
-
-    public void buyFarm(View v, int satelliteselect, Toast toast, TextView text, PopupWindow popupWindow){
-        String buy;
-        if(money >= farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1)){
-            money = money - (long)(farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1));
-            boughtfarm.set(satelliteselect,true);
-            touchcontrol.get(satelliteselect).buyFarm();
-            saveBought(satelliteselect,boughtfarm.get(satelliteselect));
-            saveCash();
-            buy = "Planet #"+(satelliteselect+1)+" was bought";
-            v.setVisibility(View.GONE);
-            popupWindow.dismiss();
-            ColorMatrix matrix = new ColorMatrix();
-            matrix.setSaturation(1);  //1 means identity colour
-            ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
-            farmbutton[satelliteselect].setColorFilter(cf);
-        }
-        else {
-            buy = "Not enough funds to buy this Planet";
-        }
-        text.setText(buy);
-        toast.show();
-        view.setText(String.valueOf(money));
-    }
-
-    public void upgradeFarm(View v, int satelliteselect, Toast toast, TextView text){
-        String upgrade;
-        if(money >= farm.get(satelliteselect).upgradeCost()) {//buys an upgrade if there is enough money
-            money = money - farm.get(satelliteselect).upgradeCost();
-            farm.get(satelliteselect).upgrade();
-            saveCash();
-            saveModifier(satelliteselect,farm.get(satelliteselect).getModifier());
-            upgrade = "Planet #"+ (satelliteselect+1) + " was upgraded.";
-        }
-        else {
-            upgrade = "Planet #"+ (satelliteselect+1) + " needs more money to upgrade";
-        }
-        text.setText(upgrade);
-        toast.show();
-        Button upgradeButton = (Button) v.findViewById(R.id.upgrade);
-        String upgradeString = "Upgrade ("+ farm.get(satelliteselect).upgradeCost()+"$)";
-        upgradeButton.setText(upgradeString);
-        Button sellButton = (Button) v.findViewById(R.id.sell);
-        String sellString = "Sell ("+ farm.get(satelliteselect).sellCost()+"$)";
-        sellButton.setText(sellString);
-        view.setText(String.valueOf(money));
-    }
-
-    public void sellFarm(View v, int satelliteselect, Toast toast, TextView text, PopupWindow popupWindow){
-        money += farm.get(satelliteselect).sell();
-        farm.get(satelliteselect).disable();
-        saveCash();
-        saveModifier(satelliteselect,farm.get(satelliteselect).getModifier());
-        if(satelliteselect != 0) {
-            boughtfarm.set(satelliteselect, false);
-            touchcontrol.get(satelliteselect).buyFarm();
-            saveBought(satelliteselect, boughtfarm.get(satelliteselect));
-            ColorMatrix matrix = new ColorMatrix();
-            matrix.setSaturation(0);  //0 means grayscale
-            ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
-            farmbutton[satelliteselect].setColorFilter(cf);
-        }
-        saveAuto(satelliteselect, false);
-        String sell = "Planet #"+ (satelliteselect+1) + " was sold.";
-        text.setText(sell);
-        toast.show();
-        view.setText(String.valueOf(money));
-        popupWindow.dismiss();
-    }
-
-    public void autoFarm(View v, int satelliteselect, Toast toast, TextView text){
-        String auto;
-        if(money >= farm.get(satelliteselect).getScale()*100) {
-            farm.get(satelliteselect).enable();
-            money = money - farm.get(satelliteselect).getScale()*100;
-            auto = "Planet #" + (satelliteselect + 1) + " can now be farmed automatically.";
-            saveAuto(satelliteselect,true);
-            v.setVisibility(View.GONE);
-        }
-        else {
-            auto = "Not enough funds to purchase this upgrade";
-        }
-        text.setText(auto);
-        toast.show();
-        view.setText(String.valueOf(money));
-    }
     @Override
     protected void onStop() {
         super.onStop();
@@ -656,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
             location2[0] = planetview.getX();
             location2[1] = planetview.getY();
             int distance = (int) Math.sqrt(Math.pow(location1[0]-location2[0],2)+Math.pow(location1[1]-location2[1],2));
-            view.setText(String.valueOf(distance));
+            //view.setText(String.valueOf(distance));
             //path.arcTo(0, 465, 855, 1250, 0f, 359f, true);
             float left = location2[0]-distance;
             float top = location2[1]-distance;
@@ -733,9 +471,8 @@ public class MainActivity extends AppCompatActivity {
         final TextView textTimer = (TextView) findViewById(R.id.textView);
         findViewById(R.id.button).setVisibility(View.GONE);
         timerisrunning = true;
-        for (int i = 0; i < 8; i++){
-            farm.get(i).setBooster(2);
-        }
+        universe1.setBooster(2);
+
 
         countDownTimer = new CountDownTimer(60 * minuti * 1000, 500) {
             // 500 means, onTick function will be called at every 500 milliseconds
@@ -755,10 +492,107 @@ public class MainActivity extends AppCompatActivity {
                 textTimer.setText("");
                 timerisrunning = false;
                 findViewById(R.id.button).setVisibility(View.VISIBLE);
-                for (int i = 0; i < 8; i++){
-                    farm.get(i).setBooster(1);
-                }
+                universe1.setBooster(1);
             }
         }.start();
+    }
+    /**
+     * NextActivity is our fragments switcher used to swap our "universe" view with another before if available
+     * @param view the view of the ui
+     */
+    public void PrevActivity(View view){
+        // we will create a transaction between fragments
+        FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
+        fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+        // Replace the content of the container
+        switch(currentUniverse) {
+            case 0:
+                fts.replace(R.id.placeholder, universe3);
+                currentUniverse = 2;
+                break;
+            case 1:
+                fts.replace(R.id.placeholder, universe1);
+                currentUniverse = currentUniverse -1;
+                break;
+            case 2:
+                fts.replace(R.id.placeholder, universe2);
+                currentUniverse = currentUniverse -1;
+                break;
+        }
+        // Commit the changes
+        fts.commit();
+    }
+
+    /**
+     * NextActivity is our fragments switcher used to swap our "universe" view with another
+     * @param view the view of the ui
+     */
+    public void NextActivity(View view) {
+//        old way to swap activities
+//        Intent intent = new Intent(this, SecondActivity.class);
+//        startActivity(intent);
+//        //where right side is current view
+//        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
+        fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+        switch(currentUniverse) {
+            case 0:
+                // we will create a transaction between fragments
+                // Replace the content of the container
+                //fts.replace(R.id.placeholder, new Universe2(settings, MainActivity.this, context, this.view, soundeffvolume));
+                fts.replace(R.id.placeholder, universe2);
+                break;
+            case 1:
+                fts.replace(R.id.placeholder,universe3);
+                break;
+            case 2:
+                fts.replace(R.id.placeholder, universe1);
+                break;
+        }
+        // Commit the changes
+        fts.commit();
+        currentUniverse = (currentUniverse + 1) % 3;
+    }
+
+    static public String calculateCash(long money){
+        long million = 1000000;
+        long trillion = 1000000000000L;
+        if(money >= trillion){
+            return (int)(money/trillion) + "T$";
+        }
+        else if(money >= million){
+            return (int)(money/million) + "M$";
+        }
+        else {
+            return money + "$";
+        }
+    }
+
+    /**
+     * plays the sound for when a satellite is pressed
+     */
+    static public void playSatelliteSound(){
+        if(!isplaying)satellitesound.start();
+    }
+
+    /**
+     * plays the sound for when a planet is pressed
+     */
+    static public void playPlanetSound(boolean purchased){
+        if (!isplaying) {
+            if (purchased) {
+                if (planetsound1.isPlaying()){
+                    planetsound1.pause();
+                    planetsound1.seekTo(0);
+                }
+                    planetsound1.start();
+            } else {
+                if (planetsound2.isPlaying()){
+                    planetsound2.pause();
+                    planetsound2.seekTo(0);
+                }
+                planetsound2.start();
+            }
+        }
     }
 }

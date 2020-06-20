@@ -2,12 +2,20 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
+    <item
+        android:id="@+id/action_websearch"
+        android:icon="@drawable/ic_menubutton"
+        android:orderInCategory="3"
+        android:title="Info"
+        app:showAsAction="ifRoom">
+    <menu>
     <item android:id="@+id/reset"
-        android:title="@string/startover" />
+        android:title="@string/startover"/>
     <item android:id="@+id/options"
-        android:title="Options"/>
+        android:title="Options" />
     <item android:id="@+id/about"
         android:title="About"/>
-
+    </menu>
+</item>
 
 </menu>

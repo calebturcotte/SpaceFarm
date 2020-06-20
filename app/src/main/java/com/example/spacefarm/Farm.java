@@ -4,10 +4,12 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.CountDownTimer;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -29,26 +31,33 @@ public class Farm {
     private boolean upkeep;
     private CountDownTimer time;
     private int booster;
-    ProgressBar bar;
-    final TextView container;
-    LinearLayout autolayout;
+    private ProgressBar bar;
+    private final TextView container;
+    private LinearLayout autolayout;
     private SharedPreferences sharedPrefs;
+    SharedPreferences.Editor editor;
+    private int universe;
+    private int percent;
+    private TextView barText;
 
 
-    public Farm(final int scale, final int modifier, ImageView farmbutton, Activity activity){
+    public Farm(int universe, final int scale, final int modifier, final ImageView farmbutton, Activity activity, LayoutInflater inflater){
         this.scale = scale;
+        this.universe = universe;
         this.sharedPrefs = activity.getApplicationContext().getSharedPreferences("MyPrefsFile", 0);
         money = sharedPrefs.getInt("money"+scale, 0);
+        percent = sharedPrefs.getInt("timer"+scale+":"+universe,0);
         upkeep = false;
         this.modifier = modifier;
         booster = 1;
-        LayoutInflater inflater = activity.getLayoutInflater();
+        //LayoutInflater inflater = activity.getLayoutInflater();
         final ConstraintLayout framelayout = activity.findViewById(R.id.zoomView);
         autolayout = new LinearLayout(activity);
         LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         autolayout.setLayoutParams(mParams);
         autolayout.setOrientation(LinearLayout.VERTICAL);
         autolayout.setPadding((int) farmbutton.getX() + farmbutton.getWidth()/4, (int) farmbutton.getY() + farmbutton.getHeight(), 0, 0);
+        //autolayout.setPadding((int) 100, (int) farmbutton.getY() + farmbutton.getHeight(), 0, 0);
 
         container = new TextView(activity.getApplicationContext());
         autolayout.addView(container);
@@ -57,31 +66,47 @@ public class Farm {
         String farmcontainer = String.valueOf(money);
         container.setTextColor(Color.parseColor("#39FF14"));
         container.setText(farmcontainer);
+        FrameLayout barLayout = new FrameLayout(activity);
+        barText = new TextView(activity.getApplicationContext());
+        barText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        barText.setGravity(Gravity.CENTER_HORIZONTAL);
+        barText.setTypeface(null,Typeface.BOLD);
         bar = (ProgressBar ) inflater.inflate(R.layout.autoprogress, null);
         bar.setLayoutParams(mParams);
-        autolayout.addView(bar);
+        barLayout.addView(bar);
+        barLayout.addView(barText);
+        autolayout.addView(barLayout);
         framelayout.addView(autolayout);
 
         autolayout.setVisibility(View.INVISIBLE);
 
-        time = new CountDownTimer(2000*scale, 500) {
+        time = new CountDownTimer(2000*scale, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-
+                long seconds = millisUntilFinished / 1000;
+                percent = (int)(seconds / (60.0 * 2000*scale)*100);
+                saveTimer(percent);
             }
 
             @Override
             public void onFinish() {
+                if(money < 9) {
+                    bar.setProgress(0);
+                    ObjectAnimator.ofInt(bar, "progress", 100)
+                            .setDuration(2000 * scale)
+                            .start();
+                    time.start();
+                }else {
+                    bar.setProgress(100);
+                    barText.setText("MAX");
+                }
                 money++;
                 container.setText(String.valueOf(money));
-                bar.setProgress(0);
-                ObjectAnimator.ofInt(bar, "progress", 100)
-                        .setDuration(2000*scale)
-                        .start();
                 saveMoney();
-                time.start();
+
             }
         };
+        editor = sharedPrefs.edit();
     }
 
     /**
@@ -89,7 +114,15 @@ public class Farm {
      */
     public int contains(){
         if(upkeep) {
-            return money * scale * modifier + scale*modifier;
+            if(money == 10){
+                barText.setText("");
+                bar.setProgress(0);
+                ObjectAnimator.ofInt(bar, "progress", 100)
+                        .setDuration((2000 * scale))
+                        .start();
+                time.start();
+            }
+            return (money * scale * modifier + scale*modifier)*booster;
         }
 
         return scale*modifier*booster;
@@ -102,11 +135,18 @@ public class Farm {
         if(!upkeep) {
             upkeep = true;
             autolayout.setVisibility(View.VISIBLE);
-            bar.setProgress(0);
-            ObjectAnimator.ofInt(bar, "progress", 100)
-                    .setDuration(2000*scale)
-                    .start();
-            time.start();
+
+            if(money != 10) {
+                bar.setProgress(0);
+                ObjectAnimator.ofInt(bar, "progress", 100)
+                        .setDuration((2000 * scale))
+                        .start();
+                time.start();
+            }
+            else{
+                bar.setProgress(100);
+                barText.setText("MAX");
+            }
         }
     }
 
@@ -118,6 +158,7 @@ public class Farm {
             upkeep = false;
             autolayout.setVisibility(View.INVISIBLE);
             time.cancel();
+            saveTimer(0);
         }
     }
 
@@ -197,8 +238,12 @@ public class Farm {
      * saves the current money stored in the farm
      */
     private void saveMoney(){
-        SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putInt("money"+scale,money);
+        editor.apply();
+    }
+
+    private void saveTimer(int progress){
+        editor.putInt("timer"+scale+":"+universe,progress);
         editor.apply();
     }
 }

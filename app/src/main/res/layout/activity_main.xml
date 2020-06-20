@@ -4,384 +4,420 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="@drawable/backgroundv2">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/zoomView"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/placeholder"
         android:layout_height="match_parent"
-        android:background="@drawable/spacebackground">
-
-        <!--    guidelines used for layout-->
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/left_guideline6"
-            app:layout_constraintGuide_percent=".1"
-            android:orientation="vertical"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/left_guideline"
-            app:layout_constraintGuide_percent=".15"
-            android:orientation="vertical"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/left_guideline2"
-            app:layout_constraintGuide_percent=".35"
-            android:orientation="vertical"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/left_guideline3"
-            app:layout_constraintGuide_percent=".55"
-            android:orientation="vertical"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/left_guideline4"
-            app:layout_constraintGuide_percent=".60"
-            android:orientation="vertical"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/left_guideline5"
-            app:layout_constraintGuide_percent=".90"
-            android:orientation="vertical"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bottom_guideline5"
-            app:layout_constraintGuide_percent=".28"
-            android:orientation="horizontal"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bottom_guideline4"
-            app:layout_constraintGuide_percent=".11"
-            android:orientation="horizontal"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bottom_guideline6"
-            app:layout_constraintGuide_percent=".13"
-            android:orientation="horizontal"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bottom_guideline2"
-            app:layout_constraintGuide_percent=".60"
-            android:orientation="horizontal"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bottom_guideline3"
-            app:layout_constraintGuide_percent=".45"
-            android:orientation="horizontal"/>
-        <androidx.constraintlayout.widget.Guideline
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/bottom_guideline"
-            app:layout_constraintGuide_percent=".75"
-            android:orientation="horizontal"/>
-
-
-        <ImageView
-            android:id="@+id/farm1"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.19"
-            app:layout_constraintHeight_percent="0.1"
-            android:adjustViewBounds="true"
-            android:src="@drawable/planet1"
-            android:background="@null"
-            android:scaleX="1"
-            android:scaleY="1"
-
-            app:layout_constraintStart_toStartOf="@id/left_guideline"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline6" />
-
-        <ImageView
-            android:id="@+id/farm3"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.23"
-            app:layout_constraintHeight_percent="0.13"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_planet_1_final"
-            android:background="@null"
-            android:contentDescription="@string/planet2"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintStart_toStartOf="@id/left_guideline2"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline5" />
-
-        <ImageView
-            android:id="@+id/farm5"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.23"
-            app:layout_constraintHeight_percent="0.13"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_planet_2_final"
-            android:background="@null"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintStart_toStartOf="@id/left_guideline3"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline3" />
-
-        <ImageView
-            android:id="@+id/farm8"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_planet_3_final"
-            android:background="@null"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintStart_toStartOf="@id/left_guideline4"
-            app:layout_constraintTop_toTopOf="@+id/bottom_guideline"
-            app:layout_constraintHeight_percent="0.14"
-            app:layout_constraintWidth_percent="0.25"
-            tools:layout_editor_absoluteY="500dp" />
-
-        <ImageView
-            android:id="@+id/farm2"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.21"
-            app:layout_constraintHeight_percent="0.11"
-            android:adjustViewBounds="true"
-            android:src="@drawable/planet1"
-            android:background="@null"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintStart_toStartOf="@+id/left_guideline4"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline4" />
-
-        <ImageView
-            android:id="@+id/farm4"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.2"
-            app:layout_constraintHeight_percent="0.1"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/planet1"
-            android:background="@null"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintStart_toStartOf="@id/left_guideline6"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline3"/>
-
-        <ImageView
-            android:id="@+id/farm6"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.16"
-            app:layout_constraintHeight_percent="0.09"
-            android:layout_marginStart="148dp"
-            android:layout_marginLeft="148dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/planet1"
-            android:background="@null"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline2" />
-
-        <ImageView
-            android:id="@+id/farm7"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.23"
-            app:layout_constraintHeight_percent="0.13"
-            android:layout_marginStart="68dp"
-            android:layout_marginLeft="68dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/planet1"
-            android:background="@null"
-            android:scaleX="1"
-            android:scaleY="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline" />
-
-        <ImageView
-            android:id="@+id/satellite1"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.1"
-            app:layout_constraintHeight_percent="0.1"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="showPopup"
-            android:rotation="45"
-            android:src="@drawable/ic_harvester"
-            app:layout_constraintStart_toEndOf="@id/farm1"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline6"/>
-        <ImageView
-            android:id="@+id/satellite3"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.1"
-            app:layout_constraintHeight_percent="0.1"
-            android:clickable="true"
-            android:focusable="true"
-            android:rotation="45"
-            android:src="@drawable/ic_harvester"
-            android:onClick="showPopup"
-            app:layout_constraintStart_toEndOf="@id/farm3"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline5"/>
-        <ImageView
-            android:id="@+id/satellite5"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.1"
-            app:layout_constraintHeight_percent="0.1"
-            android:clickable="true"
-            android:focusable="true"
-            android:rotation="45"
-            android:src="@drawable/ic_harvester"
-            android:onClick="showPopup"
-            app:layout_constraintStart_toEndOf="@id/farm5"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline3"/>
-
-        <ImageView
-            android:id="@+id/satellite8"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.1"
-            app:layout_constraintHeight_percent="0.1"
-            android:layout_marginEnd="1dp"
-            android:layout_marginRight="1dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="showPopup"
-            android:rotation="45"
-            android:src="@drawable/ic_harvester"
-            app:layout_constraintStart_toEndOf="@id/farm8"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline" />
-
-        <ImageView
-            android:id="@+id/satellite2"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.1"
-            app:layout_constraintHeight_percent="0.1"
-            android:layout_marginEnd="21dp"
-            android:layout_marginRight="21dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="showPopup"
-            android:rotation="45"
-            android:src="@drawable/ic_harvester"
-            app:layout_constraintStart_toEndOf="@id/farm2"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline4" />
-
-        <ImageView
-            android:id="@+id/satellite4"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.1"
-            app:layout_constraintHeight_percent="0.1"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="showPopup"
-            android:rotation="45"
-            android:src="@drawable/ic_harvester"
-            app:layout_constraintStart_toEndOf="@+id/farm4"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline3" />
-
-        <ImageView
-            android:id="@+id/satellite6"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.1"
-            app:layout_constraintHeight_percent="0.1"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="showPopup"
-            android:rotation="45"
-            android:src="@drawable/ic_harvester"
-            app:layout_constraintStart_toEndOf="@id/farm6"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline2" />
-
-        <ImageView
-            android:id="@+id/satellite7"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintWidth_percent="0.1"
-            app:layout_constraintHeight_percent="0.1"
-            android:clickable="true"
-            android:focusable="true"
-            android:onClick="showPopup"
-            android:rotation="45"
-            android:src="@drawable/ic_harvester"
-            app:layout_constraintStart_toEndOf="@id/farm7"
-            app:layout_constraintTop_toTopOf="@id/bottom_guideline" />
+        android:layout_width="match_parent"/>
 
 
 
+<!--    <ScrollView-->
+<!--        android:id="@+id/vScroll"-->
+<!--        android:scaleX="1"-->
+<!--        android:scaleY="1"-->
+<!--        android:overScrollMode="never"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:scrollbars="none"-->
+<!--        app:layout_constraintStart_toEndOf="@id/left_side"-->
+<!--        app:layout_constraintTop_toTopOf="@id/top_guideline">-->
+<!--        <HorizontalScrollView-->
+<!--            android:id="@+id/hScroll"-->
+<!--            android:scaleX="1"-->
+<!--            android:scaleY="1"-->
+<!--            android:overScrollMode="never"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:scrollbars="none">-->
 
-        <!--        <ImageButton-->
-<!--            android:id="@+id/farm"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="100dp"-->
-<!--            android:layout_marginStart="61dp"-->
-<!--            android:layout_marginLeft="61dp"-->
-<!--            android:layout_marginTop="100dp"-->
-<!--            android:background="@drawable/planet1"-->
-<!--            android:onClick="click"-->
-<!--            android:scaleType="fitXY"-->
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/zoomView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:background="@drawable/background"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
+
+<!--        &lt;!&ndash;    guidelines used for layout&ndash;&gt;-->
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/left_guideline6"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintGuide_percent=".1" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/left_guideline"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintGuide_percent="0.12" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/left_guideline2"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintGuide_percent=".35" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/left_guideline3"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintGuide_percent=".55" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/left_guideline4"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintGuide_percent=".60" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/left_guideline5"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="vertical"-->
+<!--            app:layout_constraintGuide_percent=".90" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/bottom_guideline5"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintGuide_percent="0.27" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/bottom_guideline4"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintGuide_percent=".11" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/bottom_guideline6"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintGuide_percent=".13" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/bottom_guideline2"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintGuide_percent=".60" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/bottom_guideline3"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintGuide_percent=".45" />-->
+
+<!--        <androidx.constraintlayout.widget.Guideline-->
+<!--            android:id="@+id/bottom_guideline"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            app:layout_constraintGuide_percent=".75" />-->
+
+
+<!--        <ImageView-->
+<!--            android:id="@+id/farm1"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:adjustViewBounds="true"-->
+<!--            android:background="@null"-->
+<!--            android:scaleX="1"-->
+<!--            android:scaleY="1"-->
+<!--            android:src="@drawable/planet1"-->
+<!--            app:layout_constraintHeight_percent="0.1"-->
+<!--            app:layout_constraintStart_toStartOf="@id/left_guideline"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline6"-->
+<!--            app:layout_constraintWidth_percent="0.19" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/farm3"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:adjustViewBounds="true"-->
+<!--            android:background="@null"-->
+<!--            android:contentDescription="@string/planet2"-->
+<!--            android:scaleX="1"-->
+<!--            android:scaleY="1"-->
+<!--            android:src="@drawable/ic_planet_1_final"-->
+<!--            app:layout_constraintHeight_percent="0.13"-->
+<!--            app:layout_constraintStart_toStartOf="@id/left_guideline2"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline5"-->
+<!--            app:layout_constraintWidth_percent="0.23" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/farm5"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:adjustViewBounds="true"-->
+<!--            android:background="@null"-->
+<!--            android:scaleX="1"-->
+<!--            android:scaleY="1"-->
+<!--            android:src="@drawable/ic_planet_2_final"-->
+<!--            app:layout_constraintHeight_percent="0.13"-->
+<!--            app:layout_constraintStart_toStartOf="@id/left_guideline3"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline3"-->
+<!--            app:layout_constraintWidth_percent="0.23" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/farm8"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginEnd="16dp"-->
+<!--            android:layout_marginRight="16dp"-->
+<!--            android:adjustViewBounds="true"-->
+<!--            android:background="@null"-->
+<!--            android:scaleX="1"-->
+<!--            android:scaleY="1"-->
+<!--            android:src="@drawable/ic_planet_3_final"-->
+<!--            app:layout_constraintHeight_percent="0.14"-->
+<!--            app:layout_constraintStart_toStartOf="@id/left_guideline4"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/bottom_guideline"-->
+<!--            app:layout_constraintWidth_percent="0.25"-->
+<!--            tools:layout_editor_absoluteY="500dp" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/farm2"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:adjustViewBounds="true"-->
+<!--            android:background="@null"-->
+<!--            android:scaleX="1"-->
+<!--            android:scaleY="1"-->
+<!--            android:src="@drawable/ic_planet_5"-->
+<!--            app:layout_constraintHeight_percent="0.11"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/left_guideline4"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline4"-->
+<!--            app:layout_constraintWidth_percent="0.21" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/farm4"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:layout_marginLeft="10dp"-->
+<!--            android:adjustViewBounds="true"-->
+<!--            android:background="@null"-->
+<!--            android:scaleX="1"-->
+<!--            android:scaleY="1"-->
+<!--            android:src="@drawable/ic_planet_6"-->
+<!--            app:layout_constraintHeight_percent="0.1"-->
+<!--            app:layout_constraintStart_toStartOf="@id/left_guideline6"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline3"-->
+<!--            app:layout_constraintWidth_percent="0.2" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/farm6"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginStart="148dp"-->
+<!--            android:layout_marginLeft="148dp"-->
+<!--            android:adjustViewBounds="true"-->
+<!--            android:background="@null"-->
+<!--            android:scaleX="1"-->
+<!--            android:scaleY="1"-->
+<!--            android:src="@drawable/ic_planet_7"-->
+<!--            app:layout_constraintHeight_percent="0.09"-->
 <!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline2"-->
+<!--            app:layout_constraintWidth_percent="0.16" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/farm7"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginStart="68dp"-->
+<!--            android:layout_marginLeft="68dp"-->
 <!--            android:adjustViewBounds="true"-->
 <!--            android:scaleX="1"-->
-<!--            android:scaleY="1"/>-->
-    </androidx.constraintlayout.widget.ConstraintLayout>
+<!--            android:scaleY="1"-->
+<!--            android:src="@drawable/ic_planet_4"-->
+<!--            app:layout_constraintHeight_percent="0.13"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline"-->
+<!--            app:layout_constraintWidth_percent="0.23" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/satellite1"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:onClick="showPopup"-->
+<!--            android:rotation="45"-->
+<!--            android:src="@drawable/ic_harvester"-->
+<!--            app:layout_constraintHeight_percent="0.1"-->
+<!--            app:layout_constraintStart_toEndOf="@id/farm1"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline6"-->
+<!--            app:layout_constraintWidth_percent="0.1" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/satellite3"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:onClick="showPopup"-->
+<!--            android:rotation="45"-->
+<!--            android:src="@drawable/ic_harvester"-->
+<!--            app:layout_constraintHeight_percent="0.1"-->
+<!--            app:layout_constraintStart_toEndOf="@id/farm3"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline5"-->
+<!--            app:layout_constraintWidth_percent="0.1" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/satellite5"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:onClick="showPopup"-->
+<!--            android:rotation="45"-->
+<!--            android:src="@drawable/ic_harvester"-->
+<!--            app:layout_constraintHeight_percent="0.1"-->
+<!--            app:layout_constraintStart_toEndOf="@id/farm5"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline3"-->
+<!--            app:layout_constraintWidth_percent="0.1" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/satellite8"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginEnd="1dp"-->
+<!--            android:layout_marginRight="1dp"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:onClick="showPopup"-->
+<!--            android:rotation="45"-->
+<!--            android:src="@drawable/ic_harvester"-->
+<!--            app:layout_constraintHeight_percent="0.1"-->
+<!--            app:layout_constraintStart_toEndOf="@id/farm8"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline"-->
+<!--            app:layout_constraintWidth_percent="0.1" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/satellite2"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginEnd="21dp"-->
+<!--            android:layout_marginRight="21dp"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:onClick="showPopup"-->
+<!--            android:rotation="45"-->
+<!--            android:src="@drawable/ic_harvester"-->
+<!--            app:layout_constraintHeight_percent="0.1"-->
+<!--            app:layout_constraintStart_toEndOf="@id/farm2"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline4"-->
+<!--            app:layout_constraintWidth_percent="0.1" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/satellite4"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:onClick="showPopup"-->
+<!--            android:rotation="45"-->
+<!--            android:src="@drawable/ic_harvester"-->
+<!--            app:layout_constraintHeight_percent="0.1"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/farm4"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline3"-->
+<!--            app:layout_constraintWidth_percent="0.1" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/satellite6"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:onClick="showPopup"-->
+<!--            android:rotation="45"-->
+<!--            android:src="@drawable/ic_harvester"-->
+<!--            app:layout_constraintHeight_percent="0.1"-->
+<!--            app:layout_constraintStart_toEndOf="@id/farm6"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline2"-->
+<!--            app:layout_constraintWidth_percent="0.1" />-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/satellite7"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:onClick="showPopup"-->
+<!--            android:rotation="45"-->
+<!--            android:src="@drawable/ic_harvester"-->
+<!--            app:layout_constraintHeight_percent="0.1"-->
+<!--            app:layout_constraintStart_toEndOf="@id/farm7"-->
+<!--            app:layout_constraintTop_toTopOf="@id/bottom_guideline"-->
+<!--            app:layout_constraintWidth_percent="0.1" />-->
+
+
+<!--        &lt;!&ndash;        <ImageButton&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:id="@+id/farm"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:layout_width="100dp"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:layout_height="100dp"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:layout_marginStart="61dp"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:layout_marginLeft="61dp"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:layout_marginTop="100dp"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:background="@drawable/planet1"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:onClick="click"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:scaleType="fitXY"&ndash;&gt;-->
+<!--        &lt;!&ndash;            app:layout_constraintStart_toStartOf="parent"&ndash;&gt;-->
+<!--        &lt;!&ndash;            app:layout_constraintTop_toTopOf="parent"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:adjustViewBounds="true"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:scaleX="1"&ndash;&gt;-->
+<!--        &lt;!&ndash;            android:scaleY="1"/>&ndash;&gt;-->
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+<!--        </HorizontalScrollView>-->
+<!--    </ScrollView>-->
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.08"
-        android:background="@drawable/toolbar"
+        android:background="@drawable/ic_moneypanel"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
-        app:collapseIcon="@android:drawable/ic_btn_speak_now"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.08"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/toolbarTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="?attr/actionBarSize"
-            android:layout_marginRight="?attr/actionBarSize"
             android:gravity="center"
             android:text="@string/options"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:textSize="20sp"
             android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.8"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.06"
         android:layout_marginTop="2dp"
         android:layout_marginEnd="1dp"
         android:layout_marginRight="1dp"
-        android:background="@drawable/ic_moneybar"
+        android:background="@drawable/ic_moneypanel"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.06"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.8"
         tools:ignore="ContentDescription" />
 
     <androidx.constraintlayout.widget.Guideline
@@ -407,50 +443,70 @@
     <ImageView
         android:id="@+id/soundView"
         android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.1"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.06"
         android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/ic_music_on"
         android:onClick="music"
+        app:layout_constraintHeight_percent="0.06"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.1" />
 
     <ProgressBar
         android:id="@+id/barTimer"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.1"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.06"
         android:layout_centerInParent="true"
+        android:layout_marginTop="70dp"
         android:progressDrawable="@drawable/circular_progress_bar"
+        app:layout_constraintHeight_percent="0.06"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="70dp"/>
+        app:layout_constraintWidth_percent="0.1" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.1"
         android:layout_height="0dp"
+        android:gravity="center"
+        android:textColor="#39FF14"
         app:layout_constraintHeight_percent="0.06"
-        android:layout_marginTop="70dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/barTimer"
+        app:layout_constraintWidth_percent="0.1" />
 
     <Button
         android:id="@+id/button"
-        android:layout_width="49dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="17dp"
-        android:layout_marginLeft="17dp"
+        android:layout_width="40dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
         android:layout_marginTop="70dp"
+        android:background="@drawable/ic_2x2"
         android:onClick="showAd"
-        android:text="2x"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:layout_width="71dp"
+        android:layout_height="49dp"
+        android:text="Back"
+        android:textColor="@color/black"
+        android:onClick="PrevActivity"
+        app:layout_constraintBottom_toTopOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent" />
+    <Button
+        android:layout_width="71dp"
+        android:layout_height="49dp"
+        android:text="next"
+        android:textColor="@color/black"
+        android:onClick="NextActivity"
+        app:layout_constraintBottom_toTopOf="@id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
