@@ -34,10 +34,11 @@ public class Farm {
     private ProgressBar bar;
     private final TextView container;
     private LinearLayout autolayout;
+    private ConstraintLayout framelayout;
     private SharedPreferences sharedPrefs;
     SharedPreferences.Editor editor;
     private int universe;
-    private int percent;
+    private double percent;
     private TextView barText;
 
 
@@ -45,20 +46,17 @@ public class Farm {
         this.scale = scale;
         this.universe = universe;
         this.sharedPrefs = activity.getApplicationContext().getSharedPreferences("MyPrefsFile", 0);
-        money = sharedPrefs.getInt("money"+scale, 0);
-        percent = sharedPrefs.getInt("timer"+scale+":"+universe,0);
+        money = sharedPrefs.getInt("money"+scale+":"+universe, 0);
+        percent = sharedPrefs.getInt("timer"+scale+":"+universe,100);
         upkeep = false;
         this.modifier = modifier;
         booster = 1;
-        //LayoutInflater inflater = activity.getLayoutInflater();
-        final ConstraintLayout framelayout = activity.findViewById(R.id.zoomView);
+        framelayout = activity.findViewById(R.id.zoomView);
         autolayout = new LinearLayout(activity);
         LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         autolayout.setLayoutParams(mParams);
         autolayout.setOrientation(LinearLayout.VERTICAL);
         autolayout.setPadding((int) farmbutton.getX() + farmbutton.getWidth()/4, (int) farmbutton.getY() + farmbutton.getHeight(), 0, 0);
-        //autolayout.setPadding((int) 100, (int) farmbutton.getY() + farmbutton.getHeight(), 0, 0);
-
         container = new TextView(activity.getApplicationContext());
         autolayout.addView(container);
         container.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -76,36 +74,11 @@ public class Farm {
         barLayout.addView(bar);
         barLayout.addView(barText);
         autolayout.addView(barLayout);
-        framelayout.addView(autolayout);
 
         autolayout.setVisibility(View.INVISIBLE);
+        framelayout.addView(autolayout);
 
-        time = new CountDownTimer(2000*scale, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                long seconds = millisUntilFinished / 1000;
-                percent = (int)(seconds / (60.0 * 2000*scale)*100);
-                saveTimer(percent);
-            }
-
-            @Override
-            public void onFinish() {
-                if(money < 9) {
-                    bar.setProgress(0);
-                    ObjectAnimator.ofInt(bar, "progress", 100)
-                            .setDuration(2000 * scale)
-                            .start();
-                    time.start();
-                }else {
-                    bar.setProgress(100);
-                    barText.setText("MAX");
-                }
-                money++;
-                container.setText(String.valueOf(money));
-                saveMoney();
-
-            }
-        };
+        setTimer();
         editor = sharedPrefs.edit();
     }
 
@@ -137,11 +110,46 @@ public class Farm {
             autolayout.setVisibility(View.VISIBLE);
 
             if(money != 10) {
-                bar.setProgress(0);
-                ObjectAnimator.ofInt(bar, "progress", 100)
-                        .setDuration((2000 * scale))
+                bar.setProgress((int)(100-percent));
+                ObjectAnimator.ofInt(bar, "progress", (int)(100-percent), 100)
+                        .setDuration((long)((2000*scale)*((percent)/100.0)))
                         .start();
-                time.start();
+                final CountDownTimer temptime = new CountDownTimer((long) ((2000*scale)*((percent)/100.0)), 500) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        long seconds = millisUntilFinished / 1000 + (long)((100-percent)/100.0)*(2000*scale);
+                        percent = (seconds / (2.0*scale))*100;
+                        if(percent > 100)percent = 100;
+                        bar.setProgress((int)((100-percent)));
+                        String tempString =(int)(100-percent) + "%" ;
+                        barText.setText(tempString);
+                        saveTimer((int)percent);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        if(money < 9) {
+                            bar.setProgress(0);
+                    ObjectAnimator.ofInt(bar, "progress", 100)
+                            .setDuration(2000 * scale)
+                            .start();
+                            //cancel();
+                            time.start();
+                        }else {
+                            bar.setProgress(100);
+                            barText.setText("MAX");
+                            cancel();
+                        }
+                        money++;
+                        container.setText(String.valueOf(money));
+                        saveMoney();
+
+                    }
+                };
+                temptime.start();
+                //bar.setProgress(100);
+                //setTimer();
+                //time.start();
             }
             else{
                 bar.setProgress(100);
@@ -212,7 +220,8 @@ public class Farm {
         modifier = 1;
         money = 0;
         saveMoney();
-
+        percent = 100;
+        saveTimer(100);
         return sellCost();
     }
 
@@ -238,12 +247,51 @@ public class Farm {
      * saves the current money stored in the farm
      */
     private void saveMoney(){
-        editor.putInt("money"+scale,money);
+        editor.putInt("money"+scale+":"+universe,money);
         editor.apply();
     }
 
+    /**
+     * saves our progress of the timer so we can resume from the proper point
+     * @param progress current percent progress on the progress bar
+     */
     private void saveTimer(int progress){
         editor.putInt("timer"+scale+":"+universe,progress);
         editor.apply();
+    }
+
+    /**
+     * sets the timer used for auto farm
+     */
+    private void setTimer(){
+        time = new CountDownTimer(2000*scale, 500) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long seconds = millisUntilFinished / 1000;
+                percent = (seconds / (2.0*scale))*100;
+                //bar.setProgress((int)(100-percent));
+                String tempString = (int)(100-percent)+"%";
+                barText.setText(tempString);
+                saveTimer((int)percent);
+            }
+
+            @Override
+            public void onFinish() {
+                if(money < 9) {
+                    bar.setProgress(0);
+                    ObjectAnimator.ofInt(bar, "progress", 100)
+                            .setDuration(2000 * scale)
+                            .start();
+                    time.start();
+                }else {
+                    bar.setProgress(100);
+                    barText.setText("MAX");
+                }
+                money++;
+                container.setText(String.valueOf(money));
+                saveMoney();
+
+            }
+        };
     }
 }

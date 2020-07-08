@@ -23,13 +23,13 @@
             android:layout_height="145dp"
             android:src="@drawable/ic_lock"
             android:layout_gravity="center"
-            android:text="@string/welcome"
             android:textColor="@color/black" />
         <Button
             android:id="@+id/unlock"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:text=""
+            android:background="@drawable/button"
             android:layout_gravity="center"
             />
         <Space

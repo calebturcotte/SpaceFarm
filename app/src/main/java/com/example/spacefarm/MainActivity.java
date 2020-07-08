@@ -1,20 +1,18 @@
 package com.example.spacefarm;
 
-
-
-
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Path;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -22,7 +20,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
-
 import android.os.CountDownTimer;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,12 +27,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -48,7 +43,9 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-import java.util.ArrayList;
+
+import java.io.IOException;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -57,10 +54,11 @@ public class MainActivity extends AppCompatActivity {
      * gravity: the animator responsible for each satellite
      */
     public static final String PREFS_NAME = "MyPrefsFile";
-    public Context context;
+    private static SoundPool test;
+    public static Context context;
     static long money;
-    TextView view;
-    static MediaPlayer music, satellitesound, planetsound1, planetsound2;
+    static TextView view;
+    static MediaPlayer music;
     int currentvolume;
     static int soundeffvolume;
     public static boolean isplaying;
@@ -71,8 +69,10 @@ public class MainActivity extends AppCompatActivity {
     Universe1 universe1;
     Universe2 universe2;
     Universe3 universe3;
-    int currentUniverse;
+    static int currentUniverse;
     SharedPreferences settings;
+    //MusicPlayer test;
+    //SoundPool test;
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -88,19 +88,16 @@ public class MainActivity extends AppCompatActivity {
         view = findViewById(R.id.money);
         int tempvolume = 80;
         soundeffvolume = settings.getInt("soundeffvolume", tempvolume);
-        satellitesound = MediaPlayer.create(MainActivity.this, R.raw.satellitepress);
-        satellitesound.setVolume((float)soundeffvolume/100, (float)soundeffvolume/100);
-        planetsound1 = MediaPlayer.create(MainActivity.this, R.raw.buttonpress);
-        planetsound1.setVolume((float)soundeffvolume/100, (float)soundeffvolume/100);
-        planetsound2 = MediaPlayer.create(MainActivity.this, R.raw.buttondull);
-        planetsound2.setVolume((float)soundeffvolume/100, (float)soundeffvolume/100);
         currentUniverse = 0;
         universe1 = new Universe1(settings, MainActivity.this, context, view);
         universe2 = new Universe2(settings, MainActivity.this, context, view);
         universe3 = new Universe3(settings, MainActivity.this, context, view);
         ft.replace(R.id.placeholder, universe1);
         ft.commit();
-
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        assert inflater != null;
+        findViewById(R.id.mainscreen).setOnTouchListener(new BackGroundTouch(MainActivity.this, inflater));
 //        final SpaceBackground spaceBackground = new SpaceBackground((ScrollView) findViewById(R.id.vScroll), (HorizontalScrollView) findViewById(R.id.hScroll));
 //        findViewById(R.id.vScroll).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 //            public void onGlobalLayout() {
@@ -118,28 +115,56 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
+        //Set up our moving background
+        final ImageView backgroundOne = findViewById(R.id.background);
+        final ImageView backgroundTwo = findViewById(R.id.background2);
+        final ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(50000L);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                final float progress = (float) animation.getAnimatedValue();
+                final float width = backgroundOne.getWidth();
+                final float translationX = width * progress;
+                backgroundOne.setTranslationX(translationX);
+                backgroundTwo.setTranslationX(translationX - width);
+            }
+        });
+        animator.start();
 
         timerisrunning = false;
         loadAd();
 
         money = settings.getLong("money", money);
         view.setText(calculateCash(money));
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         //add music to our app
         music = MediaPlayer.create(MainActivity.this,R.raw.spacefarmmaintheme);
         music.setLooping(true);
-
         currentvolume = settings.getInt("bgvolume", tempvolume);
+
+        //SoundPool used for short music sound effects
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        test = new SoundPool.Builder().setAudioAttributes(audioAttributes).setMaxStreams(5).build();
+        test.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                soundPool.play(sampleId, (float)soundeffvolume/100, (float)soundeffvolume/100, 1, 0, 1.0f);
+            }
+        });
 
         music.setVolume((float)currentvolume/100, (float)currentvolume/100);
         isplaying = settings.getBoolean("isplaying",isplaying);
         ImageView musicSetting = findViewById(R.id.soundView);
         if(!isplaying){
             musicSetting.setBackgroundResource(R.drawable.ic_music_on);
-            music.start();
         } else {
             musicSetting.setBackgroundResource(R.drawable.ic_music_off);
         }
@@ -159,6 +184,21 @@ public class MainActivity extends AppCompatActivity {
 //                findViewById(R.id.farm2).getViewTreeObserver().removeOnGlobalLayoutListener(this);
 //            }
 //        });
+
+        final ImageView rightscroll = findViewById(R.id.right_arrow);
+        rightscroll.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                ImageView leftscroll = findViewById(R.id.left_arrow);
+                Animation leftscrollanimation = AnimationUtils.loadAnimation(context, R.anim.leftarrow);
+
+
+                Animation rightscrollanimation = AnimationUtils.loadAnimation(context, R.anim.rightarrow);
+                leftscroll.startAnimation(rightscrollanimation);
+                rightscroll.startAnimation(leftscrollanimation);
+                rightscroll.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
 
     }
     @Override
@@ -256,14 +296,6 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
-                        //for(int i = 0; i < totalplanets; i++) {
-                            //touchcontrol.get(i).setVolume(arg1);
-                        satellitesound.setVolume((float)arg1/100,(float)arg1/100);
-                        planetsound1.setVolume((float)arg1/100,(float)arg1/100);
-                        planetsound2.setVolume((float)arg1/100,(float)arg1/100);
-//                            if(universe1.getView()!=null)universe1.setVolume((float)arg1);
-//                            if(universe2.getView()!=null)universe2.setVolume((float)arg1);
-                        //}
                         soundeffvolume = arg1;
                         saveVolume("soundeffvolume",arg1);
                     }
@@ -291,7 +323,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void music(View v){
-
         if(!isplaying){
             v.setBackgroundResource(R.drawable.ic_music_off);
             music.pause();
@@ -376,6 +407,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * save any remaining booster from watched advertisement
+     * @param value
+     */
+    public void saveBooster(int value){
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt("booster",value);
+        editor.apply();
+    }
+
+    /**
      * Unused code for making a satellite circle its respective planet
      * @param satelliteview the view of the satellite
      * @param planetview the view of the planet it orbits
@@ -400,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
             float top = location2[1]-distance;
             float right = location2[0]+distance;
             float bottom = location2[1]+distance;
-            path.arcTo(left, top, right, bottom, 0f, 359f, true); //with first four parameters you determine four edge of a rectangle by pixel , and fifth parameter is the path'es start point from circle 360 degree and sixth parameter is end point of path in that circle
+            path.arcTo(left, top, right, bottom, 0f, 359f, true); //with first four parameters you determine four edge of a rectangle by pixel , and fifth parameter is the path's start point from circle 360 degree and sixth parameter is end point of path in that circle
             ObjectAnimator animator = ObjectAnimator.ofFloat(satelliteview, View.X, View.Y, path); //at first parameter (view) put the target view
             animator.setDuration(10000);
             animator.setRepeatCount(Animation.INFINITE);
@@ -467,8 +509,8 @@ public class MainActivity extends AppCompatActivity {
      * @param minuti : number of minutes for the timer
      */
     private void startTimer(final int minuti) {
-        final ProgressBar barTimer = (ProgressBar) findViewById(R.id.barTimer);
-        final TextView textTimer = (TextView) findViewById(R.id.textView);
+        final ProgressBar barTimer = findViewById(R.id.barTimer);
+        final TextView textTimer = findViewById(R.id.textView);
         findViewById(R.id.button).setVisibility(View.GONE);
         timerisrunning = true;
         universe1.setBooster(2);
@@ -482,7 +524,8 @@ public class MainActivity extends AppCompatActivity {
                 long seconds = leftTimeInMilliseconds / 1000;
                 double percent = seconds / (60.0 * minuti)*100;
                 barTimer.setProgress((int) percent);
-                textTimer.setText(String.format("%02d", seconds / 60) + ":" + String.format("%02d", seconds % 60));
+                String timetext = String.format(Locale.getDefault(),"%02d", seconds / 60) + ":" + String.format(Locale.getDefault(),"%02d", seconds % 60);
+                textTimer.setText(timetext);
                 // format the textview to show the easily readable format
 
             }
@@ -497,7 +540,7 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
     /**
-     * NextActivity is our fragments switcher used to swap our "universe" view with another before if available
+     * PrevActivity is our fragments switcher used to swap our "universe" view with another before if available
      * @param view the view of the ui
      */
     public void PrevActivity(View view){
@@ -507,14 +550,17 @@ public class MainActivity extends AppCompatActivity {
         // Replace the content of the container
         switch(currentUniverse) {
             case 0:
+                universe3 = new Universe3(settings, MainActivity.this, context, MainActivity.view);
                 fts.replace(R.id.placeholder, universe3);
                 currentUniverse = 2;
                 break;
             case 1:
+                universe1 = new Universe1(settings, MainActivity.this, context, MainActivity.view);
                 fts.replace(R.id.placeholder, universe1);
                 currentUniverse = currentUniverse -1;
                 break;
             case 2:
+                universe2 = new Universe2(settings, MainActivity.this, context, MainActivity.view);
                 fts.replace(R.id.placeholder, universe2);
                 currentUniverse = currentUniverse -1;
                 break;
@@ -539,13 +585,15 @@ public class MainActivity extends AppCompatActivity {
             case 0:
                 // we will create a transaction between fragments
                 // Replace the content of the container
-                //fts.replace(R.id.placeholder, new Universe2(settings, MainActivity.this, context, this.view, soundeffvolume));
+                universe2 = new Universe2(settings, MainActivity.this, context, MainActivity.view);
                 fts.replace(R.id.placeholder, universe2);
                 break;
             case 1:
+                universe3 = new Universe3(settings, MainActivity.this, context, MainActivity.view);
                 fts.replace(R.id.placeholder,universe3);
                 break;
             case 2:
+                universe1 = new Universe1(settings, MainActivity.this, context, MainActivity.view);
                 fts.replace(R.id.placeholder, universe1);
                 break;
         }
@@ -554,44 +602,43 @@ public class MainActivity extends AppCompatActivity {
         currentUniverse = (currentUniverse + 1) % 3;
     }
 
+    /**
+     * Converts a money value to a more readable format
+     * @param money the money to be converted to a string
+     * @return String value of money in a more readable view
+     */
     static public String calculateCash(long money){
         long million = 1000000;
         long trillion = 1000000000000L;
         if(money >= trillion){
-            return (int)(money/trillion) + "T$";
+            return String.format(Locale.getDefault(),"%.2f", (double)money/trillion) + "T$";
         }
         else if(money >= million){
-            return (int)(money/million) + "M$";
+            return String.format(Locale.getDefault(),"%.2f", (double)money/million) + "M$";
         }
         else {
             return money + "$";
         }
+
+
     }
 
     /**
      * plays the sound for when a satellite is pressed
      */
     static public void playSatelliteSound(){
-        if(!isplaying)satellitesound.start();
+        if(!isplaying)test.load(context, R.raw.satellitepress, 1);
     }
 
     /**
      * plays the sound for when a planet is pressed
      */
-    static public void playPlanetSound(boolean purchased){
+    static public void playPlanetSound(boolean purchased) {
         if (!isplaying) {
             if (purchased) {
-                if (planetsound1.isPlaying()){
-                    planetsound1.pause();
-                    planetsound1.seekTo(0);
-                }
-                    planetsound1.start();
+                test.load(context, R.raw.press5, 1);
             } else {
-                if (planetsound2.isPlaying()){
-                    planetsound2.pause();
-                    planetsound2.seekTo(0);
-                }
-                planetsound2.start();
+                test.load(context, R.raw.dull1, 1);
             }
         }
     }

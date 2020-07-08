@@ -6,7 +6,6 @@
     android:id="@+id/zoomView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/backgroundv2"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
@@ -39,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent=".55" />
+                app:layout_constraintGuide_percent=".60" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/left_guideline4"
@@ -83,12 +82,26 @@
                 android:orientation="horizontal"
                 app:layout_constraintGuide_percent=".60" />
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/bottom_guideline3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent=".45" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom_guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.45" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom_guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.40" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom_guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.70" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/bottom_guideline"
@@ -106,7 +119,7 @@
                 android:background="@null"
                 android:scaleX="1"
                 android:scaleY="1"
-                android:src="@drawable/planet1"
+                android:src="@drawable/ic_planet_10"
                 app:layout_constraintHeight_percent="0.1"
                 app:layout_constraintStart_toStartOf="@id/left_guideline"
                 app:layout_constraintTop_toTopOf="@id/bottom_guideline6"
@@ -121,7 +134,7 @@
                 android:contentDescription="@string/planet2"
                 android:scaleX="1"
                 android:scaleY="1"
-                android:src="@drawable/ic_planet_1_final"
+                android:src="@drawable/ic_planet_17"
                 app:layout_constraintHeight_percent="0.13"
                 app:layout_constraintStart_toStartOf="@id/left_guideline2"
                 app:layout_constraintTop_toTopOf="@id/bottom_guideline5"
@@ -135,10 +148,10 @@
                 android:background="@null"
                 android:scaleX="1"
                 android:scaleY="1"
-                android:src="@drawable/ic_planet_2_final"
+                android:src="@drawable/ic_planet_13"
                 app:layout_constraintHeight_percent="0.13"
                 app:layout_constraintStart_toStartOf="@id/left_guideline3"
-                app:layout_constraintTop_toTopOf="@id/bottom_guideline3"
+                app:layout_constraintTop_toTopOf="@id/bottom_guideline7"
                 app:layout_constraintWidth_percent="0.23" />
 
             <ImageView
@@ -151,10 +164,10 @@
                 android:background="@null"
                 android:scaleX="1"
                 android:scaleY="1"
-                android:src="@drawable/ic_planet_3_final"
+                android:src="@drawable/ic_planet_22"
                 app:layout_constraintHeight_percent="0.14"
                 app:layout_constraintStart_toStartOf="@id/left_guideline4"
-                app:layout_constraintTop_toTopOf="@+id/bottom_guideline"
+                app:layout_constraintTop_toTopOf="@+id/bottom_guideline8"
                 app:layout_constraintWidth_percent="0.25"
                 tools:layout_editor_absoluteY="500dp" />
 
@@ -255,7 +268,7 @@
                 android:src="@drawable/ic_harvester"
                 app:layout_constraintHeight_percent="0.1"
                 app:layout_constraintStart_toEndOf="@id/farm5"
-                app:layout_constraintTop_toTopOf="@id/bottom_guideline3"
+                app:layout_constraintTop_toTopOf="@id/bottom_guideline7"
                 app:layout_constraintWidth_percent="0.1" />
 
             <ImageView
@@ -270,7 +283,7 @@
                 android:src="@drawable/ic_harvester"
                 app:layout_constraintHeight_percent="0.1"
                 app:layout_constraintStart_toEndOf="@id/farm8"
-                app:layout_constraintTop_toTopOf="@id/bottom_guideline"
+                app:layout_constraintTop_toTopOf="@id/bottom_guideline8"
                 app:layout_constraintWidth_percent="0.1" />
 
             <ImageView

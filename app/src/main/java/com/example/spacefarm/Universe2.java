@@ -169,7 +169,7 @@ public class Universe2 extends Fragment {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             popupWindow.setElevation(20);
         }
-
+        text.setText("Hello");
     }
     public void showPopup(View v){
         final View satelliteview = v;
@@ -208,6 +208,7 @@ public class Universe2 extends Fragment {
 
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window token
+        popupWindow.setAnimationStyle(R.style.PopupAnimation);
         popupWindow.showAtLocation(farmbutton[0], Gravity.TOP | Gravity.START, (int)v.getX() + 200, (int)v.getY());
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -216,6 +217,13 @@ public class Universe2 extends Fragment {
             }
         });
 
+        popupView.findViewById(R.id.close).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                return false;
+            }
+        });
         //add click options for the popup window buttons
         Button buyButton = (Button) popupView.findViewById(R.id.buy);
         buyButton.setOnClickListener(new View.OnClickListener() {
@@ -277,7 +285,7 @@ public class Universe2 extends Fragment {
                 autoFarm(v,satelliteselect,toast,text);
             }
         });
-        String autoString = "Farm \nautomatically ("+ MainActivity.calculateCash(farm.get(satelliteselect).getScale()*100)+")";
+        String autoString = "Auto \nFarm ("+ MainActivity.calculateCash(farm.get(satelliteselect).getScale()*100)+")";
         autoButton.setText(autoString);
 
         if(boughtfarm.get(satelliteselect)){
@@ -321,7 +329,6 @@ public class Universe2 extends Fragment {
             saveBought(satelliteselect+8,boughtfarm.get(satelliteselect));
             saveCash();
             buy = "Planet #"+(satelliteselect+1)+" was bought";
-            v.setVisibility(View.GONE);
             popupWindow.dismiss();
             ColorMatrix matrix = new ColorMatrix();
             matrix.setSaturation(1);  //1 means identity colour
@@ -367,7 +374,7 @@ public class Universe2 extends Fragment {
         saveModifier(satelliteselect+8,farm.get(satelliteselect).getModifier());
         boughtfarm.set(satelliteselect, false);
         touchcontrol.get(satelliteselect).buyFarm();
-        saveBought(satelliteselect, boughtfarm.get(satelliteselect));
+        saveBought(satelliteselect+8, boughtfarm.get(satelliteselect));
         ColorMatrix matrix = new ColorMatrix();
         matrix.setSaturation(0);  //0 means grayscale
         ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
@@ -497,7 +504,7 @@ public class Universe2 extends Fragment {
         });
 
         Button unlockButton = unlockView.findViewById(R.id.unlock);
-        String unlockString = "Unlock: ("+MainActivity.calculateCash(unlockcost)+ ")";
+        String unlockString = "Unlock:\n("+MainActivity.calculateCash(unlockcost)+ ")";
         unlockButton.setText(unlockString);
         unlockButton.setTextColor(Color.BLACK);
         unlockButton.setOnClickListener(new View.OnClickListener(){

@@ -16,6 +16,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 
 public class FarmTouch implements View.OnTouchListener{
     private Context context;
@@ -42,6 +44,7 @@ public class FarmTouch implements View.OnTouchListener{
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+//                MainActivity.planetTouched(planet, event);
                 ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(planet,
                         "scaleX", 0.9f);
                 ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(planet,

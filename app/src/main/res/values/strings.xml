@@ -1,13 +1,16 @@
 <resources>
     <string name="app_name">SpaceFarm</string>
+    <string name="soundbutton">Sound Button</string>
     <string name="moneybar">0</string>
-    <string name="sell">Sell</string>
-    <string name="upgrade">Upgrade</string>
-    <string name="autoon">Enable Autofarm</string>
+    <string name="sell">Sell (1000M$)</string>
+    <string name="upgrade">Upgrade (1000M$)</string>
+    <string name="autoon">Farm Automatically (1000M$)</string>
     <string name="autooff">Disable Autofarm</string>
     <string name="reset">Reset</string>
     <string name="startover">Start Over</string>
     <string name="options">Options</string>
+    <string name="about">About</string>
+    <string name="info">Info</string>
     <string name="buy">Buy Planet</string>
     <string name="planet1">Planet #1</string>
     <string name="planet2">Planet #2</string>

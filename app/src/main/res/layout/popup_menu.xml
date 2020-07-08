@@ -15,12 +15,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <Space
-            android:layout_height="15dp"
-            android:layout_width="2dp"
+            android:layout_height="20dp"
+            android:layout_width="120dp"
             android:layout_gravity="center"/>
         <Button
             android:id="@+id/buy"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_margin="0.5dp"
             android:layout_gravity="center"
@@ -28,11 +28,12 @@
             android:text="@string/buy"
             android:textColor="@color/black"
             android:textSize="12sp"
-            android:focusable="true" />
+            android:focusable="true"
+            android:background="@drawable/button"/>
 
         <Button
             android:id="@+id/upgrade"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_margin="0.5dp"
             android:layout_gravity="center"
@@ -40,10 +41,11 @@
             android:textColor="@color/black"
             android:textSize="12sp"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true"
+            android:background="@drawable/button"/>
         <Button
             android:id="@+id/sell"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_margin="0.5dp"
             android:layout_gravity="center"
@@ -51,10 +53,11 @@
             android:textColor="@color/black"
             android:textSize="12sp"
             android:clickable="true"
-            android:focusable="true"/>
+            android:focusable="true"
+            android:background="@drawable/button"/>
         <Button
             android:id="@+id/auto"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_margin="0.5dp"
             android:layout_gravity="center"
@@ -62,14 +65,17 @@
             android:textColor="@color/black"
             android:textSize="12sp"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true"
+            android:background="@drawable/button"/>
     <Space
-        android:layout_height="15dp"
+        android:layout_height="20dp"
         android:layout_width="2dp"
         android:layout_gravity="center"/>
     </LinearLayout>
-    <Space
-        android:layout_height="15dp"
+
+    <ImageView
+        android:id="@+id/close"
         android:layout_width="20dp"
-        android:layout_gravity="center"/>
+        android:layout_height="20dp"
+        android:src="@drawable/ic_closebutton"/>
 </LinearLayout>

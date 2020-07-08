@@ -1,5 +1,7 @@
 package com.example.spacefarm;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -181,6 +183,7 @@ public class Universe1 extends Fragment {
         }
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window token
+        popupWindow.setAnimationStyle(R.style.PopupAnimation);
         popupWindow.showAtLocation(farmbutton[0], Gravity.TOP | Gravity.START, (int)v.getX() + 200, (int)v.getY());
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -197,6 +200,15 @@ public class Universe1 extends Fragment {
         toast.setGravity(Gravity.BOTTOM, 0, 0);
         toast.setDuration(Toast.LENGTH_SHORT/2);
         toast.setView(layout);
+
+        popupView.findViewById(R.id.close).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                return false;
+            }
+        });
+
 
         //add click options for the popup window buttons
         popupView.findViewById(R.id.buy).setOnClickListener(new View.OnClickListener() {
@@ -256,7 +268,7 @@ public class Universe1 extends Fragment {
             }
         });
         Button autoButton = (Button) popupView.findViewById(R.id.auto);
-        String autoString = "Farm \nautomatically ("+ MainActivity.calculateCash(farm.get(satelliteselect).getScale()*100)+")";
+        String autoString = "Auto \nFarm ("+ MainActivity.calculateCash(farm.get(satelliteselect).getScale()*100)+")";
         autoButton.setText(autoString);
 
         if(boughtfarm.get(satelliteselect)){
@@ -294,7 +306,6 @@ public class Universe1 extends Fragment {
             saveBought(satelliteselect,boughtfarm.get(satelliteselect));
             saveCash();
             buy = "Planet #"+(satelliteselect+1)+" was bought";
-            v.setVisibility(View.GONE);
             popupWindow.dismiss();
             ColorMatrix matrix = new ColorMatrix();
             matrix.setSaturation(1);  //1 means identity colour
