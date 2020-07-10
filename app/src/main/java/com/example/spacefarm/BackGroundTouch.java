@@ -8,11 +8,13 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
-import android.widget.TextView;
-
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class BackGroundTouch implements View.OnTouchListener {
+    /**
+     * Our OnTouchListener for touch events on the background.
+     * Used to create a circle animation on touch
+     */
     private Activity activity;
     private LayoutInflater inflater;
 

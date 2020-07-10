@@ -46,7 +46,7 @@
                     android:layout_toRightOf="@id/planet7"
                     android:layout_toEndOf="@id/planet7"
                     android:layout_marginTop="400dp"
-                    android:src="@drawable/satellite" />
+                    android:src="@drawable/ic_harvester" />
 <!--                <ImageView-->
 <!--                    android:id="@+id/planet6"-->
 <!--                    android:layout_width="110dp"-->
@@ -358,7 +358,6 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@drawable/toolbar"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
             app:collapseIcon="@android:drawable/ic_btn_speak_now"

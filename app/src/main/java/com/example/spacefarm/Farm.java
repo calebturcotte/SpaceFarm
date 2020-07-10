@@ -24,6 +24,8 @@ public class Farm {
      * modifier: the multiplier for farm earnings
      * upkeep: boolean for if auto farm is enabled or not
      * time: the timer used for this farm
+     * booster: multiplier earned by watching ads
+     * percent: the percentage the autofarm timer bar is currently
      */
     private int money;
     final private int scale;
@@ -34,9 +36,7 @@ public class Farm {
     private ProgressBar bar;
     private final TextView container;
     private LinearLayout autolayout;
-    private ConstraintLayout framelayout;
-    private SharedPreferences sharedPrefs;
-    SharedPreferences.Editor editor;
+    private SharedPreferences.Editor editor;
     private int universe;
     private double percent;
     private TextView barText;
@@ -45,13 +45,13 @@ public class Farm {
     public Farm(int universe, final int scale, final int modifier, final ImageView farmbutton, Activity activity, LayoutInflater inflater){
         this.scale = scale;
         this.universe = universe;
-        this.sharedPrefs = activity.getApplicationContext().getSharedPreferences("MyPrefsFile", 0);
+        SharedPreferences sharedPrefs = activity.getApplicationContext().getSharedPreferences("MyPrefsFile", 0);
         money = sharedPrefs.getInt("money"+scale+":"+universe, 0);
         percent = sharedPrefs.getInt("timer"+scale+":"+universe,100);
         upkeep = false;
         this.modifier = modifier;
         booster = 1;
-        framelayout = activity.findViewById(R.id.zoomView);
+        ConstraintLayout framelayout = activity.findViewById(R.id.zoomView);
         autolayout = new LinearLayout(activity);
         LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         autolayout.setLayoutParams(mParams);
@@ -137,7 +137,7 @@ public class Farm {
                             time.start();
                         }else {
                             bar.setProgress(100);
-                            barText.setText("MAX");
+                            barText.setText(R.string.max);
                             cancel();
                         }
                         money++;
@@ -147,13 +147,11 @@ public class Farm {
                     }
                 };
                 temptime.start();
-                //bar.setProgress(100);
-                //setTimer();
-                //time.start();
+
             }
             else{
                 bar.setProgress(100);
-                barText.setText("MAX");
+                barText.setText(R.string.max);
             }
         }
     }
@@ -213,16 +211,14 @@ public class Farm {
     }
     /**
      * sells the farm and resets all the values, including stopping auto farming
-     * @return the value of the farm assets sold
      */
-    protected int sell(){
+    protected void sell(){
         disable();
         modifier = 1;
         money = 0;
         saveMoney();
         percent = 100;
         saveTimer(100);
-        return sellCost();
     }
 
     /**
@@ -231,9 +227,9 @@ public class Farm {
      */
     int sellCost(){
         if(upkeep) {
-            return (upgradeCost() + scale*(101))/2;
+            return (int) ((scale * Math.pow(1.15,modifier-1))*modifier)/4+scale*50;
         }
-        return (upgradeCost() + scale)/2;
+        return ((int) (scale * Math.pow(1.15,modifier-1))*modifier)/4;
     }
 
     /**
@@ -269,7 +265,6 @@ public class Farm {
             public void onTick(long millisUntilFinished) {
                 long seconds = millisUntilFinished / 1000;
                 percent = (seconds / (2.0*scale))*100;
-                //bar.setProgress((int)(100-percent));
                 String tempString = (int)(100-percent)+"%";
                 barText.setText(tempString);
                 saveTimer((int)percent);
@@ -285,7 +280,7 @@ public class Farm {
                     time.start();
                 }else {
                     bar.setProgress(100);
-                    barText.setText("MAX");
+                    barText.setText(R.string.max);
                 }
                 money++;
                 container.setText(String.valueOf(money));

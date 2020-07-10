@@ -1,6 +1,6 @@
 package com.example.spacefarm;
 
-import android.animation.AnimatorSet;
+
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -10,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Path;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
@@ -43,8 +42,6 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-
-import java.io.IOException;
 import java.util.Locale;
 
 
@@ -71,19 +68,20 @@ public class MainActivity extends AppCompatActivity {
     Universe3 universe3;
     static int currentUniverse;
     SharedPreferences settings;
-    //MusicPlayer test;
-    //SoundPool test;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        timerisrunning = false;
+        totalplanets = 8;
+        loadAd();
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = getApplicationContext();
         settings = getSharedPreferences(PREFS_NAME, 0);
-        totalplanets = 8;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         view = findViewById(R.id.money);
         int tempvolume = 80;
@@ -118,24 +116,25 @@ public class MainActivity extends AppCompatActivity {
         //Set up our moving background
         final ImageView backgroundOne = findViewById(R.id.background);
         final ImageView backgroundTwo = findViewById(R.id.background2);
+        final ImageView backgroundThree = findViewById(R.id.background3);
+        final ImageView backgroundFour = findViewById(R.id.background4);
         final ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setInterpolator(new LinearInterpolator());
-        animator.setDuration(50000L);
+        animator.setDuration(100000L);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 final float progress = (float) animation.getAnimatedValue();
                 final float width = backgroundOne.getWidth();
-                final float translationX = width * progress;
+                final float translationX = 3*(width * progress);
                 backgroundOne.setTranslationX(translationX);
                 backgroundTwo.setTranslationX(translationX - width);
+                backgroundThree.setTranslationX(translationX - 2*width);
+                backgroundFour.setTranslationX(translationX - 3*width);
             }
         });
         animator.start();
-
-        timerisrunning = false;
-        loadAd();
 
         money = settings.getLong("money", money);
         view.setText(calculateCash(money));
@@ -196,6 +195,9 @@ public class MainActivity extends AppCompatActivity {
                 Animation rightscrollanimation = AnimationUtils.loadAnimation(context, R.anim.rightarrow);
                 leftscroll.startAnimation(rightscrollanimation);
                 rightscroll.startAnimation(leftscrollanimation);
+                //Toolbar toolbar1 = findViewById(R.id.toolbar);
+                getSupportActionBar().setDisplayShowTitleEnabled(false);
+
                 rightscroll.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -495,7 +497,6 @@ public class MainActivity extends AppCompatActivity {
                     super.onRewardedAdClosed();
                     loadAd();
                     if(!isplaying)music.start();
-                    Toast.makeText(MainActivity.this, "ad closed", Toast.LENGTH_SHORT).show();
                 }
             };
             if(!isplaying)music.pause();
@@ -524,6 +525,7 @@ public class MainActivity extends AppCompatActivity {
                 long seconds = leftTimeInMilliseconds / 1000;
                 double percent = seconds / (60.0 * minuti)*100;
                 barTimer.setProgress((int) percent);
+                //saveBooster((int)seconds/60);
                 String timetext = String.format(Locale.getDefault(),"%02d", seconds / 60) + ":" + String.format(Locale.getDefault(),"%02d", seconds % 60);
                 textTimer.setText(timetext);
                 // format the textview to show the easily readable format

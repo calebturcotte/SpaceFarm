@@ -1,5 +1,7 @@
 package com.example.spacefarm;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -28,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Universe3 extends Fragment {
     private int totalplanets;
@@ -50,6 +53,7 @@ public class Universe3 extends Fragment {
     private Toast toast;
     private View popupView;
     private PopupWindow popupWindow;
+    private AnimatorSet[] pulse;
 
     public Universe3(SharedPreferences settings, Activity activity, Context context, TextView view){
         this.settings = settings;
@@ -95,7 +99,7 @@ public class Universe3 extends Fragment {
                 view.findViewById(R.id.farm5), view.findViewById(R.id.farm6), view.findViewById(R.id.farm7), view.findViewById(R.id.farm8),};
         final ImageView[] satellites = new ImageView[] {view.findViewById(R.id.satellite1), view.findViewById(R.id.satellite2),view.findViewById(R.id.satellite3), view.findViewById(R.id.satellite4),
                 view.findViewById(R.id.satellite5), view.findViewById(R.id.satellite6),view.findViewById(R.id.satellite7), view.findViewById(R.id.satellite8)};
-
+        pulse = new AnimatorSet[8];
         farmbutton[7].getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
@@ -132,13 +136,29 @@ public class Universe3 extends Fragment {
         });
 
         for (int i = 0; i < totalplanets; i++) {
+            long delay = 100L + new Random().nextInt(900);
+            pulse[i] = new AnimatorSet();
+            ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(
+                    farmbutton[i], "scaleX", 1.05f);
+            scaleUpX.setDuration(1000L);
+            scaleUpX.setRepeatMode(ObjectAnimator.REVERSE);
+            scaleUpX.setRepeatCount(ObjectAnimator.INFINITE);
+            scaleUpX.setStartDelay(delay);
+            ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(
+                    farmbutton[i], "scaleY", 1.05f);
+            scaleUpY.setRepeatCount(ObjectAnimator.INFINITE);
+            scaleUpY.setRepeatMode(ObjectAnimator.REVERSE);
+            scaleUpY.setDuration(1000L);
+            scaleUpY.setStartDelay(delay);
+            pulse[i].play(scaleUpX).with(scaleUpY);
             if (!boughtfarm.get(i)) {
                 ColorMatrix matrix = new ColorMatrix();
                 matrix.setSaturation(0);  //0 means grayscale
                 ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
                 farmbutton[i].setColorFilter(cf);
-                //if we wanted to fade
-                //farmbutton[i].setImageAlpha(128);   // 128 = 0.5
+            }
+            else {
+                pulse[i].start();
             }
         }
 
@@ -328,6 +348,7 @@ public class Universe3 extends Fragment {
             matrix.setSaturation(1);  //1 means identity colour
             ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
             farmbutton[satelliteselect].setColorFilter(cf);
+            pulse[satelliteselect].start();
         }
         else {
             buy = "Not enough funds to buy this Planet";
@@ -372,6 +393,7 @@ public class Universe3 extends Fragment {
         matrix.setSaturation(0);  //0 means grayscale
         ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
         farmbutton[satelliteselect].setColorFilter(cf);
+        pulse[satelliteselect].end();
         saveAuto(satelliteselect+16, false);
         String sell = "Planet #"+ (satelliteselect+1) + " was sold.";
         text.setText(sell);
@@ -392,6 +414,9 @@ public class Universe3 extends Fragment {
         else {
             auto = "Not enough funds to purchase this upgrade";
         }
+        Button sellButton = (Button) v.findViewById(R.id.sell);
+        String sellString = "Sell ("+ farm.get(satelliteselect).sellCost()+"$)";
+        sellButton.setText(sellString);
         text.setText(auto);
         toast.show();
         moneyview.setText(MainActivity.calculateCash(MainActivity.money));

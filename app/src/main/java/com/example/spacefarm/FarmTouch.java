@@ -16,11 +16,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.IOException;
-
 
 public class FarmTouch implements View.OnTouchListener{
-    private Context context;
+
     private static final String PREFS_NAME = "MyPrefsFile";
     private ImageView planet;
     private TextView moneydisplay;
@@ -34,7 +32,6 @@ public class FarmTouch implements View.OnTouchListener{
     public FarmTouch(ImageView planet, TextView view, Farm farm, Context context, Activity activity, Boolean bought){
         this.planet = planet;
         this.moneydisplay = view;
-        this.context = context.getApplicationContext();
         this.sharedPrefs = context.getSharedPreferences(PREFS_NAME, 0);
         this.farm = farm;
         this.bought = bought;
@@ -77,7 +74,6 @@ public class FarmTouch implements View.OnTouchListener{
                 scaleDownX2.setDuration(1);
                 scaleDownY2.setDuration(1);
 
-                AnimatorSet scaleDown2 = new AnimatorSet();
                 scaleDown.play(scaleDownX2).with(scaleDownY2);
 
                 scaleDown.start();

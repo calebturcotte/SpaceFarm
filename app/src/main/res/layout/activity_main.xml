@@ -7,20 +7,40 @@
     android:id="@+id/mainscreen">
 
         <ImageView
+            android:contentDescription="@string/background"
             android:id="@+id/background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/backgroundapp"
-            android:scaleType="centerCrop"
+            android:src="@drawable/c"
+            android:scaleType="fitXY"
             android:adjustViewBounds="true"
             />
     <ImageView
+        android:contentDescription="@string/background"
         android:id="@+id/background2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/backgroundapp"
+        android:src="@drawable/b"
         android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
+        android:scaleType="fitXY"
+        />
+    <ImageView
+        android:contentDescription="@string/background"
+        android:id="@+id/background3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/a"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        />
+    <ImageView
+        android:contentDescription="@string/background"
+        android:id="@+id/background4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/c"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
         />
 
 <!--    <HorizontalScrollView-->
@@ -43,7 +63,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -148,24 +167,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-<!--    <Button-->
-<!--        android:layout_width="71dp"-->
-<!--        android:layout_height="49dp"-->
-<!--        android:text="Back"-->
-<!--        android:textColor="@color/black"-->
-<!--        android:onClick="PrevActivity"-->
-<!--        app:layout_constraintBottom_toTopOf="@id/toolbar"-->
-<!--        app:layout_constraintStart_toStartOf="parent" />-->
-<!--    <Button-->
-<!--        android:id="@+id/button2"-->
-<!--        android:layout_width="71dp"-->
-<!--        android:layout_height="49dp"-->
-<!--        android:text="next"-->
-<!--        android:textColor="@color/black"-->
-<!--        android:onClick="NextActivity"-->
-<!--        app:layout_constraintBottom_toTopOf="@id/toolbar"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"/>-->
     <ImageView
+        android:contentDescription="@string/arrow"
         android:id="@+id/left_arrow"
         android:layout_width="0dp"
         app:layout_constraintWidth_percent="0.15"
@@ -179,6 +182,7 @@
         android:rotation="180"
         />
     <ImageView
+        android:contentDescription="@string/arrow"
         android:id="@+id/right_arrow"
         android:layout_width="0dp"
         app:layout_constraintWidth_percent="0.15"

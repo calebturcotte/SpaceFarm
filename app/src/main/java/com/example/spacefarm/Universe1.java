@@ -10,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -30,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Universe1 extends Fragment {
     private int totalplanets;
@@ -46,6 +46,7 @@ public class Universe1 extends Fragment {
     private Context context;
     private LayoutInflater inflater;
     private int satelliteselect;
+    private AnimatorSet[] pulse;
 
     public Universe1(SharedPreferences settings, Activity activity, Context context, TextView view){
         this.settings = settings;
@@ -67,9 +68,8 @@ public class Universe1 extends Fragment {
         touchcontrol = new ArrayList<>(totalplanets);
         for (int i = 0; i < totalplanets; i++){
             int numbought = 1;
-            boolean autofarmis = false;
             modifier.add(settings.getInt("modifier"+i,numbought));
-            autofarm.add(settings.getBoolean("auto"+i,autofarmis));
+            autofarm.add(settings.getBoolean("auto"+i,false));
         }
 
 
@@ -84,13 +84,12 @@ public class Universe1 extends Fragment {
      */
     @Override
     public void onViewCreated(View view,Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
         //code for using stuff that requires a created view use getView()
         farmbutton = new ImageView[] {view.findViewById(R.id.farm1), view.findViewById(R.id.farm2), view.findViewById(R.id.farm3), view.findViewById(R.id.farm4),
                 view.findViewById(R.id.farm5), view.findViewById(R.id.farm6), view.findViewById(R.id.farm7), view.findViewById(R.id.farm8),};
         final ImageView[] satellites = new ImageView[] {view.findViewById(R.id.satellite1), view.findViewById(R.id.satellite2),view.findViewById(R.id.satellite3), view.findViewById(R.id.satellite4),
                 view.findViewById(R.id.satellite5), view.findViewById(R.id.satellite6),view.findViewById(R.id.satellite7), view.findViewById(R.id.satellite8)};
-
+        pulse = new AnimatorSet[8];
         farmbutton[7].getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @SuppressLint("ClickableViewAccessibility")
             @Override
@@ -125,9 +124,39 @@ public class Universe1 extends Fragment {
         });
 
         boughtfarm.add(true);
+        long delay = 100L + new Random().nextInt(900);
+        pulse[0] = new AnimatorSet();
+        ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(
+                farmbutton[0], "scaleX", 1.05f);
+        scaleUpX.setDuration(1000L);
+        scaleUpX.setRepeatMode(ObjectAnimator.REVERSE);
+        scaleUpX.setRepeatCount(ObjectAnimator.INFINITE);
+        scaleUpX.setStartDelay(delay);
+        ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(
+                farmbutton[0], "scaleY", 1.05f);
+        scaleUpY.setRepeatCount(ObjectAnimator.INFINITE);
+        scaleUpY.setRepeatMode(ObjectAnimator.REVERSE);
+        scaleUpY.setDuration(1000L);
+        scaleUpY.setStartDelay(delay);
+        pulse[0].play(scaleUpX).with(scaleUpY);
         for (int i = 1; i < totalplanets; i++) {
-            boolean farmbought = false;
-            boughtfarm.add(settings.getBoolean("boughtfarm" + i, farmbought));
+            delay = 100L + new Random().nextInt(900);
+            pulse[i] = new AnimatorSet();
+            scaleUpX = ObjectAnimator.ofFloat(
+                    farmbutton[i], "scaleX", 1.05f);
+            scaleUpX.setDuration(1000L);
+            scaleUpX.setRepeatMode(ObjectAnimator.REVERSE);
+            scaleUpX.setRepeatCount(ObjectAnimator.INFINITE);
+            scaleUpX.setStartDelay(delay);
+            scaleUpY = ObjectAnimator.ofFloat(
+                    farmbutton[i], "scaleY", 1.05f);
+            scaleUpY.setRepeatCount(ObjectAnimator.INFINITE);
+            scaleUpY.setRepeatMode(ObjectAnimator.REVERSE);
+            scaleUpY.setDuration(1000L);
+            scaleUpY.setStartDelay(delay);
+            pulse[i].play(scaleUpX).with(scaleUpY);
+
+            boughtfarm.add(settings.getBoolean("boughtfarm" + i, false));
             if (!boughtfarm.get(i)) {
                 ColorMatrix matrix = new ColorMatrix();
                 matrix.setSaturation(0);  //0 means grayscale
@@ -135,8 +164,11 @@ public class Universe1 extends Fragment {
                 farmbutton[i].setColorFilter(cf);
                 //if we wanted to fade
                 //farmbutton[i].setImageAlpha(128);   // 128 = 0.5
+            } else{
+                pulse[i].start();
             }
         }
+        pulse[0].start();
     }
     public void showPopup(View v){
         final View satelliteview = v;
@@ -171,13 +203,13 @@ public class Universe1 extends Fragment {
                 satelliteselect = 7;
                 break;
         }
-        //final View popupView = inflater.inflate(R.layout.popup_menu, container , false);
+
         final View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.popup_menu, null);
         // create the popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+        //boolean focusable = true; // lets taps outside the popup also dismiss it
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             popupWindow.setElevation(20);
         }
@@ -311,6 +343,7 @@ public class Universe1 extends Fragment {
             matrix.setSaturation(1);  //1 means identity colour
             ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
             farmbutton[satelliteselect].setColorFilter(cf);
+            pulse[satelliteselect].start();
         }
         else {
             buy = "Not enough funds to buy this Planet";
@@ -346,7 +379,6 @@ public class Universe1 extends Fragment {
     public void sellFarm(View v, int satelliteselect, Toast toast, TextView text, PopupWindow popupWindow){
         MainActivity.money += farm.get(satelliteselect).sellCost();
         farm.get(satelliteselect).sell();
-        //farm.get(satelliteselect).disable();
         saveCash();
         saveModifier(satelliteselect,farm.get(satelliteselect).getModifier());
         if(satelliteselect != 0) {
@@ -357,6 +389,7 @@ public class Universe1 extends Fragment {
             matrix.setSaturation(0);  //0 means grayscale
             ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
             farmbutton[satelliteselect].setColorFilter(cf);
+            pulse[satelliteselect].end();
         }
         saveAuto(satelliteselect, false);
         String sell = "Planet #"+ (satelliteselect+1) + " was sold.";
@@ -378,6 +411,9 @@ public class Universe1 extends Fragment {
         else {
             auto = "Not enough funds to purchase this upgrade";
         }
+        Button sellButton = (Button) v.findViewById(R.id.sell);
+        String sellString = "Sell ("+ farm.get(satelliteselect).sellCost()+"$)";
+        sellButton.setText(sellString);
         text.setText(auto);
         toast.show();
         moneyview.setText(MainActivity.calculateCash(MainActivity.money));
@@ -403,6 +439,10 @@ public class Universe1 extends Fragment {
         }
     }
 
+    /**
+     * sets the booster for each farm in this universe to the appropriate value
+     * @param value: the multiplier gained by the booster
+     */
     void setBooster(int value){
         for (int i = 0; i < totalplanets; i++){
             farm.get(i).setBooster(value);

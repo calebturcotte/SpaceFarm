@@ -16,7 +16,10 @@
     <string name="planet2">Planet #2</string>
     <string name="planet3">Planet #3</string>s
     <string name="bgvolume">Background Volume</string>
+    <string name="background">App Background</string>
     <string name="sound_effect_volume">Sound Effects</string>
+    <string name="arrow">Direction Arrow</string>
+    <string name="max">MAX</string>
     <string name="welcome">Welcome to SpaceFarm!\n\n
     Spacefarm is a partially automated clicker application where the goal is to buy more and more planets and slowly expand into the galaxy.
     All designs are original and music provided by:</string>
