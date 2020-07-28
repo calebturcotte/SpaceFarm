@@ -110,7 +110,7 @@ public class Universe1 extends Fragment {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {
                             if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                                MainActivity.playSatelliteSound();
+                                MainActivity.playSatelliteSound(context);
                                 showPopup(v);
                             }
                             return true;
@@ -296,7 +296,7 @@ public class Universe1 extends Fragment {
         popupView.findViewById(R.id.auto).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                autoFarm(v,satelliteselect,toast,text);
+                autoFarm(popupView,satelliteselect,toast,text);
             }
         });
         Button autoButton = (Button) popupView.findViewById(R.id.auto);
@@ -406,7 +406,6 @@ public class Universe1 extends Fragment {
             MainActivity.money = MainActivity.money - farm.get(satelliteselect).getScale()*100;
             auto = "Planet #" + (satelliteselect + 1) + " can now be farmed automatically.";
             saveAuto(satelliteselect,true);
-            v.setVisibility(View.GONE);
         }
         else {
             auto = "Not enough funds to purchase this upgrade";
@@ -485,4 +484,36 @@ public class Universe1 extends Fragment {
         editor.putLong("money",MainActivity.money);
         editor.apply();
     }
+
+//Unused option for pausing and resuming
+//    /**
+//     * code for when the fragment ends
+//     */
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        for(int i = 0; i < 8; i++){
+//            farm.get(i).cancelTimer();
+//        }
+//    }
+//
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        farmbutton[7].getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @SuppressLint("ClickableViewAccessibility")
+//            @Override
+//            public void onGlobalLayout() {
+//                if(autofarm != null && farm != null) {
+//                    for(int i = 0; i < totalplanets; i++){
+//                        if (autofarm.get(i)){
+//                            farm.get(i).uncountedTime();
+//                            farm.get(i).enable();
+//                        }
+//                    }
+//                }
+//                farmbutton[7].getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//        }
+//        });
+//    }
 }

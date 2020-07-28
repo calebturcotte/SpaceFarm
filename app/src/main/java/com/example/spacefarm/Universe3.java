@@ -121,7 +121,7 @@ public class Universe3 extends Fragment {
                         public boolean onTouch(View v, MotionEvent event) {
                             if(event.getAction() == MotionEvent.ACTION_DOWN) {
                                 if(unlocked) {
-                                    MainActivity.playSatelliteSound();
+                                    MainActivity.playSatelliteSound(context);
                                     showPopup(v);
                                 }
                             }
@@ -296,7 +296,7 @@ public class Universe3 extends Fragment {
         autoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                autoFarm(v,satelliteselect,toast,text);
+                autoFarm(popupView,satelliteselect,toast,text);
             }
         });
         String autoString = "Auto \nFarm ("+ MainActivity.calculateCash(farm.get(satelliteselect).getScale()*100)+")";

@@ -9,18 +9,29 @@
     <string name="reset">Reset</string>
     <string name="startover">Start Over</string>
     <string name="options">Options</string>
+    <string name="minigame">Tap the meteors to collect cash!</string>
+    <string name="minigamemenu">Minigame</string>
     <string name="about">About</string>
     <string name="info">Info</string>
+    <string name="start">Start</string>
+    <string name="back">Back</string>
     <string name="buy">Buy Planet</string>
     <string name="planet1">Planet #1</string>
     <string name="planet2">Planet #2</string>
-    <string name="planet3">Planet #3</string>s
+    <string name="planet3">Planet #3</string>
     <string name="bgvolume">Background Volume</string>
     <string name="background">App Background</string>
     <string name="sound_effect_volume">Sound Effects</string>
     <string name="arrow">Direction Arrow</string>
     <string name="max">MAX</string>
     <string name="welcome">Welcome to SpaceFarm!\n\n
-    Spacefarm is a partially automated clicker application where the goal is to buy more and more planets and slowly expand into the galaxy.
-    All designs are original and music provided by:</string>
+    Spacefarm is a partially automated clicker application where the goal is to buy more and more planets and slowly expand into the galaxy.\n
+        \n•Coded by: Caleb Turcotte
+        \n•Music created by: Michael Le
+        \n•Graphic designs by: Gowri Raveenthiran &amp; Caleb Turcotte</string>
+    <string name="minigameabout">To play the minigame tap meteors as they fall down. But avoid tapping any bombs!\n
+        \n
+        •Earn up to 5 percent of your current total of money earned.\n
+        \n
+        •You can play for free every 5 minutes or immediately by watching an advertisement.</string>
 </resources>

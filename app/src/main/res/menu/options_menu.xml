@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:textColor="@color/font"
     >
     <item
         android:id="@+id/action_websearch"
-        android:icon="@drawable/ic_optiongear"
+        android:icon="@drawable/options_front"
         android:orderInCategory="3"
         android:title="@string/info"
         app:showAsAction="ifRoom">
@@ -13,6 +14,8 @@
         android:title="@string/startover"/>
     <item android:id="@+id/options"
         android:title="@string/options" />
+    <item android:id="@+id/minigame"
+        android:title="@string/minigamemenu"/>
     <item android:id="@+id/about"
         android:title="@string/about"/>
     </menu>

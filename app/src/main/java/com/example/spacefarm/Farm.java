@@ -26,6 +26,8 @@ public class Farm {
      * time: the timer used for this farm
      * booster: multiplier earned by watching ads
      * percent: the percentage the autofarm timer bar is currently
+     * totaltimes: the new amount of times that autofarm has collected since the application was closed
+     * maxmoney: the maximum money that can be stored by autofarm
      */
     private int money;
     final private int scale;
@@ -40,6 +42,9 @@ public class Farm {
     private int universe;
     private double percent;
     private TextView barText;
+    private int totaltimes;
+    private int maxmoney = 10;
+    private ObjectAnimator baranimator;
 
 
     public Farm(int universe, final int scale, final int modifier, final ImageView farmbutton, Activity activity, LayoutInflater inflater){
@@ -61,9 +66,7 @@ public class Farm {
         autolayout.addView(container);
         container.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         container.setGravity(Gravity.CENTER);
-        String farmcontainer = String.valueOf(money);
         container.setTextColor(Color.parseColor("#39FF14"));
-        container.setText(farmcontainer);
         FrameLayout barLayout = new FrameLayout(activity);
         barText = new TextView(activity.getApplicationContext());
         barText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
@@ -78,8 +81,10 @@ public class Farm {
         autolayout.setVisibility(View.INVISIBLE);
         framelayout.addView(autolayout);
 
-        setTimer();
         editor = sharedPrefs.edit();
+
+        uncountedTime();
+        container.setText(String.valueOf(money));
     }
 
     /**
@@ -87,12 +92,12 @@ public class Farm {
      */
     public int contains(){
         if(upkeep) {
-            if(money == 10){
+            if(money >= maxmoney){
                 barText.setText("");
                 bar.setProgress(0);
-                ObjectAnimator.ofInt(bar, "progress", 100)
-                        .setDuration((2000 * scale))
-                        .start();
+                baranimator = ObjectAnimator.ofInt(bar, "progress", 100)
+                        .setDuration((2000 * scale));
+                baranimator.start();
                 time.start();
             }
             return (money * scale * modifier + scale*modifier)*booster;
@@ -108,13 +113,13 @@ public class Farm {
         if(!upkeep) {
             upkeep = true;
             autolayout.setVisibility(View.VISIBLE);
-
-            if(money != 10) {
+            container.setText(String.valueOf(money));
+            if(money < maxmoney) {
                 bar.setProgress((int)(100-percent));
-                ObjectAnimator.ofInt(bar, "progress", (int)(100-percent), 100)
-                        .setDuration((long)((2000*scale)*((percent)/100.0)))
-                        .start();
-                final CountDownTimer temptime = new CountDownTimer((long) ((2000*scale)*((percent)/100.0)), 500) {
+                baranimator = ObjectAnimator.ofInt(bar, "progress", (int)(100-percent), 100)
+                        .setDuration((long)((2000*scale)*((percent)/100.0)));
+                baranimator.start();
+                time = new CountDownTimer((long) ((2000*scale)*((percent)/100.0)), 500) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         long seconds = millisUntilFinished / 1000 + (long)((100-percent)/100.0)*(2000*scale);
@@ -128,12 +133,12 @@ public class Farm {
 
                     @Override
                     public void onFinish() {
-                        if(money < 9) {
+                        if(money < (maxmoney-1)) {
                             bar.setProgress(0);
                     ObjectAnimator.ofInt(bar, "progress", 100)
                             .setDuration(2000 * scale)
                             .start();
-                            //cancel();
+                            setTimer();
                             time.start();
                         }else {
                             bar.setProgress(100);
@@ -146,10 +151,11 @@ public class Farm {
 
                     }
                 };
-                temptime.start();
+                time.start();
 
             }
             else{
+                setTimer();
                 bar.setProgress(100);
                 barText.setText(R.string.max);
             }
@@ -272,11 +278,11 @@ public class Farm {
 
             @Override
             public void onFinish() {
-                if(money < 9) {
+                if(money < (maxmoney-1)) {
                     bar.setProgress(0);
-                    ObjectAnimator.ofInt(bar, "progress", 100)
-                            .setDuration(2000 * scale)
-                            .start();
+                    baranimator = ObjectAnimator.ofInt(bar, "progress", 100)
+                            .setDuration(2000 * scale);
+                    baranimator.start();
                     time.start();
                 }else {
                     bar.setProgress(100);
@@ -288,5 +294,35 @@ public class Farm {
 
             }
         };
+    }
+
+    /**
+     * cancels the timer when the application is paused
+     */
+    public void cancelTimer(){
+        if(time != null){
+            time.cancel();
+            upkeep = false;
+            time = null;
+        }
+    }
+
+    /**
+     * calculates the time that was not accounted for while the app was closed
+     */
+    public void uncountedTime(){
+        long secondssofar = (long)((100-percent)/100.0)*(2000*scale) + MainActivity.timedifference*1000L;
+        long remainingtime = secondssofar%((2000*scale)+1);
+
+        totaltimes = (int)((secondssofar )/(2000*scale));
+        if((money + totaltimes) < 10) {
+            money = (money + totaltimes);
+
+            percent = (((remainingtime / (2.0 * scale)) * 100) + percent) % (101);
+        }
+        else {
+            money = 10;
+            percent = 100;
+        }
     }
 }

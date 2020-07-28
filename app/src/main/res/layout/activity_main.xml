@@ -5,13 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/mainscreen">
-
+<!--c,b,a,c-->
         <ImageView
             android:contentDescription="@string/background"
             android:id="@+id/background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/c"
+            android:src="@drawable/background_material"
             android:scaleType="fitXY"
             android:adjustViewBounds="true"
             />
@@ -20,25 +20,7 @@
         android:id="@+id/background2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/b"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        />
-    <ImageView
-        android:contentDescription="@string/background"
-        android:id="@+id/background3"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/a"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        />
-    <ImageView
-        android:contentDescription="@string/background"
-        android:id="@+id/background4"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/c"
+        android:src="@drawable/background_material"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
         />
@@ -65,6 +47,7 @@
         android:layout_height="0dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
+        app:theme="@style/ToolbarTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.08"
@@ -123,7 +106,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/ic_music_on"
+        android:background="@drawable/soundbutton_on"
         android:onClick="music"
         app:layout_constraintHeight_percent="0.06"
         app:layout_constraintStart_toStartOf="parent"
@@ -149,21 +132,45 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:textColor="#39FF14"
-        app:layout_constraintHeight_percent="0.06"
+        app:layout_constraintHeight_percent="0.03"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barTimer"
         app:layout_constraintWidth_percent="0.1" />
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/meteorbuttonback"
+        app:layout_constraintHeight_percent="0.06"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="10dp"
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        app:layout_constraintWidth_percent="0.1"
+        android:layout_marginLeft="10dp" />
+    <ImageView
+        android:id="@+id/minigamebutton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:onClick="startMiniGame"
+        android:src="@drawable/meteorbutton"
+        app:layout_constraintHeight_percent="0.06"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="10dp"
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        app:layout_constraintWidth_percent="0.1"
+        android:layout_marginLeft="10dp" />
 
-    <Button
+    <ImageView
         android:id="@+id/button"
-        android:layout_width="40dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="15dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.1"
+        app:layout_constraintHeight_percent="0.06"
+        android:layout_marginStart="10dp"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="70dp"
-        android:background="@drawable/ic_2x2"
+        android:background="@drawable/buttontop2x"
         android:onClick="showAd"
-        android:visibility="gone"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

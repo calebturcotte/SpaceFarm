@@ -34,7 +34,6 @@ import java.util.Random;
 
 public class Universe2 extends Fragment {
     private int totalplanets;
-    public static final String PREFS_NAME = "MyPrefsFile";
     private TextView moneyview;
     private ArrayList<Farm> farm;
     private ArrayList<Integer> modifier;
@@ -69,11 +68,9 @@ public class Universe2 extends Fragment {
         touchcontrol = new ArrayList<>(totalplanets);
         for (int i = 8; i < totalplanets+8; i++){
             int numbought = 1;
-            boolean autofarmis = false;
             modifier.add(settings.getInt("modifier"+i,numbought));
-            autofarm.add(settings.getBoolean("auto"+i,autofarmis));
-            boolean farmbought = false;
-            boughtfarm.add(settings.getBoolean("boughtfarm" + i, farmbought));
+            autofarm.add(settings.getBoolean("auto"+i,false));
+            boughtfarm.add(settings.getBoolean("boughtfarm" + i, false));
         }
         unlocked = settings.getBoolean("universe2", false);
     }
@@ -120,7 +117,7 @@ public class Universe2 extends Fragment {
                         public boolean onTouch(View v, MotionEvent event) {
                             if(event.getAction() == MotionEvent.ACTION_DOWN) {
                                 if(unlocked) {
-                                    MainActivity.playSatelliteSound();
+                                    MainActivity.playSatelliteSound(context);
                                     showPopup(v);
                                 }
 
@@ -295,11 +292,11 @@ public class Universe2 extends Fragment {
         String sellString = "Sell ("+ MainActivity.calculateCash(farm.get(satelliteselect).sellCost())+")";
         sellButton.setText(sellString);
 
-        Button autoButton = (Button) popupView.findViewById(R.id.auto);
+        Button autoButton = popupView.findViewById(R.id.auto);
         autoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                autoFarm(v,satelliteselect,toast,text);
+                autoFarm(popupView,satelliteselect,toast,text);
             }
         });
         String autoString = "Auto \nFarm ("+ MainActivity.calculateCash(farm.get(satelliteselect).getScale()*100)+")";

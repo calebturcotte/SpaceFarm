@@ -1,12 +1,14 @@
 package com.example.spacefarm;
 
 
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Path;
 import android.media.AudioAttributes;
@@ -42,6 +44,8 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+
+import java.util.Date;
 import java.util.Locale;
 
 
@@ -52,11 +56,11 @@ public class MainActivity extends AppCompatActivity {
      */
     public static final String PREFS_NAME = "MyPrefsFile";
     private static SoundPool test;
-    public static Context context;
+    public Context context;
     static long money;
-    static TextView view;
+    private TextView view;
     static MediaPlayer music;
-    int currentvolume;
+    static int currentvolume;
     static int soundeffvolume;
     public static boolean isplaying;
     private RewardedAd rewardedAd;
@@ -67,7 +71,10 @@ public class MainActivity extends AppCompatActivity {
     Universe2 universe2;
     Universe3 universe3;
     static int currentUniverse;
-    SharedPreferences settings;
+    static SharedPreferences settings;
+    static boolean minigameAd;
+    static CountDownTimer minigameUseTimer;
+    static long timedifference;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -76,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         timerisrunning = false;
         totalplanets = 8;
-        loadAd();
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -116,28 +122,28 @@ public class MainActivity extends AppCompatActivity {
         //Set up our moving background
         final ImageView backgroundOne = findViewById(R.id.background);
         final ImageView backgroundTwo = findViewById(R.id.background2);
-        final ImageView backgroundThree = findViewById(R.id.background3);
-        final ImageView backgroundFour = findViewById(R.id.background4);
+        //final ImageView backgroundThree = findViewById(R.id.background3);
+        //final ImageView backgroundFour = findViewById(R.id.background4);
         final ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setInterpolator(new LinearInterpolator());
-        animator.setDuration(100000L);
+        animator.setDuration(50000L);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 final float progress = (float) animation.getAnimatedValue();
                 final float width = backgroundOne.getWidth();
-                final float translationX = 3*(width * progress);
+                final float translationX = (width * progress);
                 backgroundOne.setTranslationX(translationX);
                 backgroundTwo.setTranslationX(translationX - width);
-                backgroundThree.setTranslationX(translationX - 2*width);
-                backgroundFour.setTranslationX(translationX - 3*width);
+                //backgroundThree.setTranslationX(translationX - 2*width);
+                //backgroundFour.setTranslationX(translationX - 3*width);
             }
         });
         animator.start();
 
         money = settings.getLong("money", money);
-        view.setText(calculateCash(money));
+        //view.setText(calculateCash(money));
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -163,9 +169,9 @@ public class MainActivity extends AppCompatActivity {
         isplaying = settings.getBoolean("isplaying",isplaying);
         ImageView musicSetting = findViewById(R.id.soundView);
         if(!isplaying){
-            musicSetting.setBackgroundResource(R.drawable.ic_music_on);
+            musicSetting.setBackgroundResource(R.drawable.soundbutton_on);
         } else {
-            musicSetting.setBackgroundResource(R.drawable.ic_music_off);
+            musicSetting.setBackgroundResource(R.drawable.soundbutton_off);
         }
 
 //
@@ -202,7 +208,67 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //animation for meteor button
+        ImageView meteorbutton = (ImageView) findViewById(R.id.minigamebutton);
+        AnimatorSet meteors = new AnimatorSet();
+        ObjectAnimator scaleUpX = ObjectAnimator.ofFloat(
+                meteorbutton, "scaleX", 0.95f);
+        scaleUpX.setDuration(1000L);
+        scaleUpX.setRepeatMode(ObjectAnimator.REVERSE);
+        scaleUpX.setRepeatCount(ObjectAnimator.INFINITE);
+        ObjectAnimator scaleUpY = ObjectAnimator.ofFloat(
+                meteorbutton, "scaleY", 0.95f);
+        scaleUpY.setRepeatCount(ObjectAnimator.INFINITE);
+        scaleUpY.setRepeatMode(ObjectAnimator.REVERSE);
+        scaleUpY.setDuration(1000L);
+        meteors.play(scaleUpX).with(scaleUpY);
+        meteors.start();
+
+        //animation for 2x button
+        ImageView twobutton = (ImageView) findViewById(R.id.button);
+        AnimatorSet boosters = new AnimatorSet();
+        ObjectAnimator scaleUpX2 = ObjectAnimator.ofFloat(
+                twobutton, "scaleX", 0.95f);
+        scaleUpX2.setDuration(1000L);
+        scaleUpX2.setRepeatMode(ObjectAnimator.REVERSE);
+        scaleUpX2.setRepeatCount(ObjectAnimator.INFINITE);
+        ObjectAnimator scaleUpY2 = ObjectAnimator.ofFloat(
+                twobutton, "scaleY", 0.95f);
+        scaleUpY2.setRepeatCount(ObjectAnimator.INFINITE);
+        scaleUpY2.setRepeatMode(ObjectAnimator.REVERSE);
+        scaleUpY2.setDuration(1000L);
+        boosters.play(scaleUpX2).with(scaleUpY2);
+        boosters.start();
+
+        //compare the time that the app spent closed
+        Date oldDate = new Date(settings.getLong("currenttime", 0L));
+        Date currentDate = new Date();
+        timedifference= 0L;
+        if(!oldDate.equals(new Date(0))) {
+            long oldtime = oldDate.getTime();
+            long newtime = currentDate.getTime();
+            timedifference = (newtime-oldtime)/1000L;
+        }
+
+        // resume timer for minigame if needed
+        long minigameAdtime = settings.getLong("minigameAd", 0L);
+        if(minigameAdtime == 0L){
+            minigameAd = true;
+        }
+        else {
+            minigameAd = false;
+            long minigameAdtime2 = minigameAdtime - timedifference;
+            minigameUseTimer(minigameAdtime2);
+        }
+
+        //set remaining timer for booster if it exists
+        long boostertime = settings.getLong("booster",0L);
+        if(boostertime != 0L){
+            startTimer(boostertime);
+        }
+
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.options_menu, menu);
@@ -319,6 +385,10 @@ public class MainActivity extends AppCompatActivity {
                 // show the popup window
                 // which view you pass in doesn't matter, it is only used for the window token
                 optionsWindow2.showAtLocation(view, Gravity.CENTER, 0, 0);
+                return true;
+            case R.id.minigame:
+                startMiniGame(null);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -326,10 +396,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void music(View v){
         if(!isplaying){
-            v.setBackgroundResource(R.drawable.ic_music_off);
+            v.setBackgroundResource(R.drawable.soundbutton_off);
             music.pause();
         } else {
-            v.setBackgroundResource(R.drawable.ic_music_on);
+            v.setBackgroundResource(R.drawable.soundbutton_on);
             music.seekTo(0);
             music.start();
         }
@@ -343,18 +413,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        if(minigameUseTimer !=null){
+            minigameUseTimer.cancel();
+        }
+        saveCurrentTime();
         if(!isplaying)music.pause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        saveCurrentTime();
         if(!isplaying)music.pause();
     }
 
     @Override
     protected void onResume(){
         super.onResume();
+        view.setText(calculateCash(money));
         if(!isplaying)music.start();
         loadAd();
     }
@@ -410,12 +486,23 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * save any remaining booster from watched advertisement
-     * @param value
+     * @param value: total seconds left in the booster timer
      */
-    public void saveBooster(int value){
+    public void saveBooster(long value){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putInt("booster",value);
+        editor.putLong("booster",value);
+        editor.apply();
+    }
+
+    /**
+     * save current time to use to calculate time that has passed since app was closed
+     */
+    public void saveCurrentTime(){
+        Date date = new Date();
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME,0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putLong("currenttime",date.getTime());
         editor.apply();
     }
 
@@ -462,7 +549,9 @@ public class MainActivity extends AppCompatActivity {
                 super.onRewardedAdLoaded();
                 // Ad successfully loaded.
                 //Toast.makeText(MainActivity.this, "adloaded", Toast.LENGTH_SHORT).show();
-                 if (!timerisrunning)findViewById(R.id.button).setVisibility(View.VISIBLE);
+                 if (!timerisrunning){
+                     findViewById(R.id.button).setVisibility(View.VISIBLE);
+                 }
             }
 
             @Override
@@ -476,14 +565,18 @@ public class MainActivity extends AppCompatActivity {
         rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
     }
 
+    /**
+     * show the advertisement used to play the 2x booster
+     * @param view
+     */
     public void showAd(View view){
         if(this.rewardedAd.isLoaded()){
             RewardedAdCallback callback = new RewardedAdCallback(){
                 @Override
                 public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
                     //reward code
-                    Toast.makeText(MainActivity.this, "reward earned", Toast.LENGTH_SHORT).show();
-                    startTimer(1);
+                    //Toast.makeText(MainActivity.this, "reward earned", Toast.LENGTH_SHORT).show();
+                    startTimer(60L);
                 }
 
                 @Override
@@ -506,10 +599,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Starts our booster timer for extra cash earning
-     * @param minuti : number of minutes for the timer
+     * show the advertisement used to play the minigame if it has been played before
      */
-    private void startTimer(final int minuti) {
+    public void showminigameAd(){
+        if(this.rewardedAd.isLoaded()){
+            RewardedAdCallback callback = new RewardedAdCallback(){
+                @Override
+                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                    //reward code
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putLong("minigameAd", 0L);
+                    editor.apply();
+                    minigameAd = true;
+                }
+
+                @Override
+                public void onRewardedAdFailedToShow(int i) {
+                    super.onRewardedAdFailedToShow(i);
+                    //code for if ad fails to load
+                }
+
+                @Override
+                public void onRewardedAdClosed() {
+                    super.onRewardedAdClosed();
+                    loadAd();
+                    if(!isplaying)music.start();
+                    if(minigameAd)startMiniGame(null);
+                }
+            };
+            this.rewardedAd.show(this, callback);
+
+        }
+    }
+
+    /**
+     * Starts our booster timer for extra cash earning
+     * @param totalseconds : number of seconds for the timer
+     */
+    private void startTimer(final long totalseconds) {
         final ProgressBar barTimer = findViewById(R.id.barTimer);
         final TextView textTimer = findViewById(R.id.textView);
         findViewById(R.id.button).setVisibility(View.GONE);
@@ -517,15 +644,15 @@ public class MainActivity extends AppCompatActivity {
         universe1.setBooster(2);
 
 
-        countDownTimer = new CountDownTimer(60 * minuti * 1000, 500) {
+        countDownTimer = new CountDownTimer(totalseconds * 1000, 500) {
             // 500 means, onTick function will be called at every 500 milliseconds
 
             @Override
             public void onTick(long leftTimeInMilliseconds) {
                 long seconds = leftTimeInMilliseconds / 1000;
-                double percent = seconds / (60.0 * minuti)*100;
+                double percent = 1.0*seconds / (totalseconds)*100;
                 barTimer.setProgress((int) percent);
-                //saveBooster((int)seconds/60);
+                saveBooster(seconds);
                 String timetext = String.format(Locale.getDefault(),"%02d", seconds / 60) + ":" + String.format(Locale.getDefault(),"%02d", seconds % 60);
                 textTimer.setText(timetext);
                 // format the textview to show the easily readable format
@@ -536,6 +663,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFinish() {
                 textTimer.setText("");
                 timerisrunning = false;
+                saveBooster(0L);
                 findViewById(R.id.button).setVisibility(View.VISIBLE);
                 universe1.setBooster(1);
             }
@@ -546,23 +674,24 @@ public class MainActivity extends AppCompatActivity {
      * @param view the view of the ui
      */
     public void PrevActivity(View view){
+        TextView textView = (TextView) findViewById(R.id.money);
         // we will create a transaction between fragments
         FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
         fts.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
         // Replace the content of the container
         switch(currentUniverse) {
             case 0:
-                universe3 = new Universe3(settings, MainActivity.this, context, MainActivity.view);
+                universe3 = new Universe3(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe3);
                 currentUniverse = 2;
                 break;
             case 1:
-                universe1 = new Universe1(settings, MainActivity.this, context, MainActivity.view);
+                universe1 = new Universe1(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe1);
                 currentUniverse = currentUniverse -1;
                 break;
             case 2:
-                universe2 = new Universe2(settings, MainActivity.this, context, MainActivity.view);
+                universe2 = new Universe2(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe2);
                 currentUniverse = currentUniverse -1;
                 break;
@@ -576,26 +705,22 @@ public class MainActivity extends AppCompatActivity {
      * @param view the view of the ui
      */
     public void NextActivity(View view) {
-//        old way to swap activities
-//        Intent intent = new Intent(this, SecondActivity.class);
-//        startActivity(intent);
-//        //where right side is current view
-//        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        TextView textView = (TextView) findViewById(R.id.money);
         FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
         fts.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
         switch(currentUniverse) {
             case 0:
                 // we will create a transaction between fragments
                 // Replace the content of the container
-                universe2 = new Universe2(settings, MainActivity.this, context, MainActivity.view);
+                universe2 = new Universe2(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe2);
                 break;
             case 1:
-                universe3 = new Universe3(settings, MainActivity.this, context, MainActivity.view);
+                universe3 = new Universe3(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder,universe3);
                 break;
             case 2:
-                universe1 = new Universe1(settings, MainActivity.this, context, MainActivity.view);
+                universe1 = new Universe1(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe1);
                 break;
         }
@@ -628,20 +753,71 @@ public class MainActivity extends AppCompatActivity {
     /**
      * plays the sound for when a satellite is pressed
      */
-    static public void playSatelliteSound(){
+    static public void playSatelliteSound(Context context){
         if(!isplaying)test.load(context, R.raw.satellitepress, 1);
     }
 
     /**
      * plays the sound for when a planet is pressed
      */
-    static public void playPlanetSound(boolean purchased) {
+    static public void playPlanetSound(boolean purchased, Context context) {
         if (!isplaying) {
             if (purchased) {
-                test.load(context, R.raw.press5, 1);
+                test.load(context, R.raw.buttonpress, 1);
             } else {
-                test.load(context, R.raw.dull1, 1);
+                test.load(context, R.raw.buttondull, 1);
             }
+        }
+    }
+
+    /**
+     * start the minigame activity
+     * @param v
+     */
+    public void startMiniGame(View v){
+        if(!isplaying)music.pause();
+        if(!minigameAd){showminigameAd();}
+        if(minigameAd) {
+            Intent intent = new Intent(this, MiniGame.class);
+            startActivity(intent);
+            //where right side is current view
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        }
+    }
+
+    /**
+     * timer for being able to play the minigame without watching an ad
+     */
+    public static void minigameUseTimer(long secondsleft){
+        if(minigameUseTimer !=null){
+            minigameUseTimer.cancel();
+        }
+        if (secondsleft >0) {
+            minigameUseTimer = new CountDownTimer(secondsleft * 1000, 1000) {
+                // 500 means, onTick function will be called at every 500 milliseconds
+
+                @Override
+                public void onTick(long leftTimeInMilliseconds) {
+                    long seconds = leftTimeInMilliseconds / 1000;
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putLong("minigameAd", seconds);
+                    editor.apply();
+                }
+
+                @Override
+                public void onFinish() {
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putLong("minigameAd", 0L);
+                    editor.apply();
+                    minigameAd = true;
+                }
+            }.start();
+        }
+        else{
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putLong("minigameAd", 0L);
+            editor.apply();
+            minigameAd = true;
         }
     }
 }
