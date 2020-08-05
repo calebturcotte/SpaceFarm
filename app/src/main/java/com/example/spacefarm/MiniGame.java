@@ -6,7 +6,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
@@ -17,16 +16,17 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,7 +36,6 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
@@ -50,7 +49,7 @@ public class MiniGame extends AppCompatActivity {
      * totalmeteors: number of meteors left in our minigame
      */
 
-    private LayoutInflater inflater;
+    private static LayoutInflater inflater;
     private static int points;
     private boolean gameplayed;
     private RewardedAd rewardedAd;
@@ -73,25 +72,78 @@ public class MiniGame extends AppCompatActivity {
         inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
         findViewById(R.id.mainscreen).setOnTouchListener(new BackGroundTouch(MiniGame.this, inflater));
-
         findViewById(R.id.start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isplaying)soundPool.load(context, R.raw.pressdown, 1);
                 start();
             }
         });
         findViewById(R.id.about).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isplaying)soundPool.load(context, R.raw.pressdown, 1);
                 about();
             }
         });
         findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isplaying)soundPool.load(context, R.raw.pressdown, 1);
                 back();
             }
         });
+        //TODO: add method for sound effects on touch and release while still having onclick functionality
+//        findViewById(R.id.start).setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent e) {
+//                switch (e.getAction()){
+//                    case MotionEvent.ACTION_DOWN:
+//                        if(!isplaying)soundPool.load(context, R.raw.pressdown, 1);
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        start();
+//                        if(!isplaying)soundPool.load(context, R.raw.pressup, 1);
+//                        v.performClick();
+//                        break;
+//                }
+//                return false;
+//            }
+//        });
+//        findViewById(R.id.about).setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent e) {
+//                switch (e.getAction()){
+//                    case MotionEvent.ACTION_DOWN:
+//                        if(!isplaying)soundPool.load(context, R.raw.pressdown, 1);
+//                        v.performClick();
+//                        break;
+//                    case MotionEvent.ACTION_CANCEL:
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        about();
+//                        if (!isplaying) soundPool.load(context, R.raw.pressup, 1);
+//                        break;
+//                }
+//                return false;
+//            }
+//        });
+//        findViewById(R.id.back).setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent e) {
+//                switch (e.getAction()){
+//                    case MotionEvent.ACTION_DOWN:
+//                        if(!isplaying)soundPool.load(context, R.raw.pressdown, 1);
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        back();
+//                        if(!isplaying)soundPool.load(context, R.raw.pressup, 1);
+//                        v.performClick();
+//                        break;
+//                }
+//                return false;
+//            }
+//        });
         points = 0;
         gameplayed = false;
 
@@ -211,6 +263,7 @@ public class MiniGame extends AppCompatActivity {
         animator.setDuration(1000);
         if(count <= 0){
             String temp = "Go!";
+            if(!isplaying)soundPool.load(context, R.raw.start, 1);
             startText.setText(temp);
             animator.addListener(new AnimatorListenerAdapter(){
                 @Override
@@ -222,6 +275,7 @@ public class MiniGame extends AppCompatActivity {
                 }
             });
         } else {
+            if(!isplaying)soundPool.load(context, R.raw.countdown, 1);
             startText.setText(String.valueOf(count));
             animator.addListener(new AnimatorListenerAdapter(){
                 @Override
@@ -289,7 +343,7 @@ public class MiniGame extends AppCompatActivity {
         ConstraintLayout.LayoutParams mParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT*2);
         applayout.setLayoutParams(mParams);
         final int ranx = new Random().nextInt(framelayout.getWidth());
-        applayout.setPadding(ranx, 0 , 0, 0);
+        applayout.setPadding(0, 0 , 0, 0);
         final int ranx2 = new Random().nextInt(framelayout.getWidth());
         View meteor;
         if(ismeteor) {
@@ -301,7 +355,7 @@ public class MiniGame extends AppCompatActivity {
         applayout.setClipChildren(false);
         applayout.setClipToPadding(false);
         applayout.addView(meteor);
-        applayout.setOnTouchListener(new MeteorTouch((TextView) findViewById(R.id.gamepoint), context, ismeteor));
+        applayout.setOnTouchListener(new MeteorTouch((TextView) findViewById(R.id.gamepoint), context, ismeteor, MiniGame.this, inflater));
         framelayout.addView(applayout);
 
         final ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
@@ -311,21 +365,23 @@ public class MiniGame extends AppCompatActivity {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 final float progress = (float) animation.getAnimatedValue();
-                final float width = ranx2-ranx;
+                float width = ranx - (ranx-ranx2)*progress;
+                if(width > framelayout.getWidth() - applayout.getWidth()){
+                    width = framelayout.getWidth() - applayout.getWidth();
+                }
                 final float height = framelayout.getHeight();
-                final float scaleX = 0.3f + (0.7f*progress);
-                final float scaleY = 0.3f + (0.7f*progress);
-                final float translationX = (width * progress);
+                final float scaleX = 0.4f + (0.6f*progress);
+                final float scaleY = 0.4f + (0.6f*progress);
                 final float translationY = height*progress;
                 applayout.setScaleX(scaleX);
                 applayout.setScaleY(scaleY);
                 applayout.setTranslationY(translationY);
-                applayout.setTranslationX(translationX);
+                applayout.setTranslationX(width);
             }
         });
         ObjectAnimator rotate = ObjectAnimator.ofFloat(meteor,"rotation", 0f, 360f );
-        rotate.setDuration(666L);
-        rotate.setRepeatCount(3);
+        rotate.setDuration(1000L);
+        rotate.setRepeatCount(2);
         rotate.setInterpolator(new LinearInterpolator());
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.play(animator).with(rotate);
@@ -480,8 +536,15 @@ public class MiniGame extends AppCompatActivity {
     /**
      * plays sound when meteor is tapped
      */
-    static public void playMeteorSound(Context context){
-        if(!isplaying)soundPool.load(context, R.raw.meteorimpact, 1);
+    static public void playMeteorSound(Context context, boolean ismeteor){
+        if(!isplaying){
+            if(ismeteor){
+                soundPool.load(context, R.raw.point, 1);
+            }
+            else {
+                soundPool.load(context, R.raw.crash, 1);
+            }
+        }
     }
 
     /**

@@ -36,7 +36,8 @@
         android:id="@+id/close"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:src="@drawable/ic_closebutton"/>
+        android:src="@drawable/ic_closebutton"
+        android:contentDescription="@string/close" />
 
 
 

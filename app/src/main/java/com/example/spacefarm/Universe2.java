@@ -53,6 +53,7 @@ public class Universe2 extends Fragment {
     private View popupView;
     private PopupWindow popupWindow;
     private AnimatorSet[] pulse;
+    private boolean firstcreate;
 
     public Universe2(SharedPreferences settings, Activity activity, Context context, TextView view){
         this.settings = settings;
@@ -73,6 +74,7 @@ public class Universe2 extends Fragment {
             boughtfarm.add(settings.getBoolean("boughtfarm" + i, false));
         }
         unlocked = settings.getBoolean("universe2", false);
+        firstcreate = true;
     }
 
 
@@ -125,9 +127,13 @@ public class Universe2 extends Fragment {
                             return true;
                         }
                     });
-                    if (autofarm.get(i))farm.get(i).enable();
+                    if (autofarm.get(i)) {
+                        if(firstcreate)farm.get(i).uncountedTime();
+                        farm.get(i).enable();
+                    }
                 }
                 if(MainActivity.timerisrunning){setBooster(2);}
+                firstcreate = false;
                 farmbutton[7].getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -243,6 +249,7 @@ public class Universe2 extends Fragment {
         buyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.playButtonSound(context);
                 buyFarm(popupView,satelliteselect,toast,text, popupWindow);
             }
         });
@@ -253,6 +260,7 @@ public class Universe2 extends Fragment {
         upgradeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.playButtonSound(context);
                 upgradeFarm(popupView,satelliteselect,toast,text);
             }
         });
@@ -263,6 +271,7 @@ public class Universe2 extends Fragment {
         sellButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.playButtonSound(context);
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                 builder.setCancelable(true);
                 String sell = "Sell Planet #" + (satelliteselect+1) + "?";
@@ -296,6 +305,7 @@ public class Universe2 extends Fragment {
         autoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.playButtonSound(context);
                 autoFarm(popupView,satelliteselect,toast,text);
             }
         });
@@ -529,6 +539,7 @@ public class Universe2 extends Fragment {
         unlockButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                MainActivity.playButtonSound(context);
                 String string;
                 if(MainActivity.money >= unlockcost){
                     MainActivity.money = MainActivity.money - unlockcost;

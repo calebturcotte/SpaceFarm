@@ -42,7 +42,6 @@ public class Farm {
     private int universe;
     private double percent;
     private TextView barText;
-    private int totaltimes;
     private int maxmoney = 10;
     private ObjectAnimator baranimator;
 
@@ -83,7 +82,7 @@ public class Farm {
 
         editor = sharedPrefs.edit();
 
-        uncountedTime();
+        //uncountedTime();
         container.setText(String.valueOf(money));
     }
 
@@ -314,7 +313,7 @@ public class Farm {
         long secondssofar = (long)((100-percent)/100.0)*(2000*scale) + MainActivity.timedifference*1000L;
         long remainingtime = secondssofar%((2000*scale)+1);
 
-        totaltimes = (int)((secondssofar )/(2000*scale));
+        int totaltimes = (int) ((secondssofar) / (2000 * scale));
         if((money + totaltimes) < 10) {
             money = (money + totaltimes);
 

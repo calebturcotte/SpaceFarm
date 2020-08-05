@@ -38,7 +38,6 @@ import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
      * gravity: the animator responsible for each satellite
      */
     public static final String PREFS_NAME = "MyPrefsFile";
-    private static SoundPool test;
+    private static SoundPool soundPool;
     public Context context;
     static long money;
     private TextView view;
@@ -157,8 +156,8 @@ public class MainActivity extends AppCompatActivity {
                 .setUsage(AudioAttributes.USAGE_GAME)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build();
-        test = new SoundPool.Builder().setAudioAttributes(audioAttributes).setMaxStreams(5).build();
-        test.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+        soundPool = new SoundPool.Builder().setAudioAttributes(audioAttributes).setMaxStreams(5).build();
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
                 soundPool.play(sampleId, (float)soundeffvolume/100, (float)soundeffvolume/100, 1, 0, 1.0f);
@@ -252,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
 
         // resume timer for minigame if needed
         long minigameAdtime = settings.getLong("minigameAd", 0L);
-        if(minigameAdtime == 0L){
+        if(minigameAdtime <= 0L){
             minigameAd = true;
         }
         else {
@@ -263,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
 
         //set remaining timer for booster if it exists
         long boostertime = settings.getLong("booster",0L);
-        if(boostertime != 0L){
+        if(boostertime > 0L){
             startTimer(boostertime);
         }
 
@@ -276,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        playButtonSound(context);
         switch (item.getItemId()) {
             case R.id.reset:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -431,6 +431,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         view.setText(calculateCash(money));
+        if(!minigameAd){
+            findViewById(R.id.minigamebutton).setVisibility(View.INVISIBLE);
+            findViewById(R.id.minigamebuttonback).setVisibility(View.INVISIBLE);
+        }
         if(!isplaying)music.start();
         loadAd();
     }
@@ -506,39 +510,39 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    /**
-     * Unused code for making a satellite circle its respective planet
-     * @param satelliteview the view of the satellite
-     * @param planetview the view of the planet it orbits
-     */
-    public void moveAnimation(View satelliteview, View planetview){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Path path = new Path();
-            float[] location1 = new float[2];
-            location1[0] = satelliteview.getX();
-            location1[1] = satelliteview.getY();
-            //satelliteview.getLocationOnScreen(location1);
-            //where location[0] is x, and location[1] is y
-            float[] location2 = new float[2];
-
-            //planetview.getLocationOnScreen(location2);
-            location2[0] = planetview.getX();
-            location2[1] = planetview.getY();
-            int distance = (int) Math.sqrt(Math.pow(location1[0]-location2[0],2)+Math.pow(location1[1]-location2[1],2));
-            //view.setText(String.valueOf(distance));
-            //path.arcTo(0, 465, 855, 1250, 0f, 359f, true);
-            float left = location2[0]-distance;
-            float top = location2[1]-distance;
-            float right = location2[0]+distance;
-            float bottom = location2[1]+distance;
-            path.arcTo(left, top, right, bottom, 0f, 359f, true); //with first four parameters you determine four edge of a rectangle by pixel , and fifth parameter is the path's start point from circle 360 degree and sixth parameter is end point of path in that circle
-            ObjectAnimator animator = ObjectAnimator.ofFloat(satelliteview, View.X, View.Y, path); //at first parameter (view) put the target view
-            animator.setDuration(10000);
-            animator.setRepeatCount(Animation.INFINITE);
-            animator.setRepeatMode(ValueAnimator.RESTART);
-            animator.start();
-        }
-    }
+//    /**
+//     * Unused code for making a satellite circle its respective planet
+//     * @param satelliteview the view of the satellite
+//     * @param planetview the view of the planet it orbits
+//     */
+//    public void moveAnimation(View satelliteview, View planetview){
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            Path path = new Path();
+//            float[] location1 = new float[2];
+//            location1[0] = satelliteview.getX();
+//            location1[1] = satelliteview.getY();
+//            //satelliteview.getLocationOnScreen(location1);
+//            //where location[0] is x, and location[1] is y
+//            float[] location2 = new float[2];
+//
+//            //planetview.getLocationOnScreen(location2);
+//            location2[0] = planetview.getX();
+//            location2[1] = planetview.getY();
+//            int distance = (int) Math.sqrt(Math.pow(location1[0]-location2[0],2)+Math.pow(location1[1]-location2[1],2));
+//            //view.setText(String.valueOf(distance));
+//            //path.arcTo(0, 465, 855, 1250, 0f, 359f, true);
+//            float left = location2[0]-distance;
+//            float top = location2[1]-distance;
+//            float right = location2[0]+distance;
+//            float bottom = location2[1]+distance;
+//            path.arcTo(left, top, right, bottom, 0f, 359f, true); //with first four parameters you determine four edge of a rectangle by pixel , and fifth parameter is the path's start point from circle 360 degree and sixth parameter is end point of path in that circle
+//            ObjectAnimator animator = ObjectAnimator.ofFloat(satelliteview, View.X, View.Y, path); //at first parameter (view) put the target view
+//            animator.setDuration(10000);
+//            animator.setRepeatCount(Animation.INFINITE);
+//            animator.setRepeatMode(ValueAnimator.RESTART);
+//            animator.start();
+//        }
+//    }
 
     public void loadAd(){
         rewardedAd = new RewardedAd(this,
@@ -551,6 +555,11 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(MainActivity.this, "adloaded", Toast.LENGTH_SHORT).show();
                  if (!timerisrunning){
                      findViewById(R.id.button).setVisibility(View.VISIBLE);
+                     findViewById(R.id.twoxbuttonback).setVisibility(View.VISIBLE);
+                 }
+                 if (!minigameAd){
+                     findViewById(R.id.minigamebutton).setVisibility(View.VISIBLE);
+                     findViewById(R.id.minigamebuttonback).setVisibility(View.VISIBLE);
                  }
             }
 
@@ -603,6 +612,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void showminigameAd(){
         if(this.rewardedAd.isLoaded()){
+            if(!isplaying)music.pause();
             RewardedAdCallback callback = new RewardedAdCallback(){
                 @Override
                 public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
@@ -611,6 +621,8 @@ public class MainActivity extends AppCompatActivity {
                     editor.putLong("minigameAd", 0L);
                     editor.apply();
                     minigameAd = true;
+                    findViewById(R.id.minigamebutton).setVisibility(View.VISIBLE);
+                    findViewById(R.id.minigamebuttonback).setVisibility(View.VISIBLE);
                 }
 
                 @Override
@@ -640,6 +652,7 @@ public class MainActivity extends AppCompatActivity {
         final ProgressBar barTimer = findViewById(R.id.barTimer);
         final TextView textTimer = findViewById(R.id.textView);
         findViewById(R.id.button).setVisibility(View.GONE);
+        findViewById(R.id.twoxbuttonback).setVisibility(View.INVISIBLE);
         timerisrunning = true;
         universe1.setBooster(2);
 
@@ -665,6 +678,7 @@ public class MainActivity extends AppCompatActivity {
                 timerisrunning = false;
                 saveBooster(0L);
                 findViewById(R.id.button).setVisibility(View.VISIBLE);
+                findViewById(R.id.twoxbuttonback).setVisibility(View.VISIBLE);
                 universe1.setBooster(1);
             }
         }.start();
@@ -681,22 +695,23 @@ public class MainActivity extends AppCompatActivity {
         // Replace the content of the container
         switch(currentUniverse) {
             case 0:
-                universe3 = new Universe3(settings, MainActivity.this, context, textView);
+                //universe3 = new Universe3(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe3);
                 currentUniverse = 2;
                 break;
             case 1:
-                universe1 = new Universe1(settings, MainActivity.this, context, textView);
+                //universe1 = new Universe1(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe1);
                 currentUniverse = currentUniverse -1;
                 break;
             case 2:
-                universe2 = new Universe2(settings, MainActivity.this, context, textView);
+                //universe2 = new Universe2(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe2);
                 currentUniverse = currentUniverse -1;
                 break;
         }
         // Commit the changes
+        if(!isplaying)soundPool.load(context, R.raw.arrow, 1);
         fts.commit();
     }
 
@@ -712,19 +727,20 @@ public class MainActivity extends AppCompatActivity {
             case 0:
                 // we will create a transaction between fragments
                 // Replace the content of the container
-                universe2 = new Universe2(settings, MainActivity.this, context, textView);
+                //universe2 = new Universe2(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe2);
                 break;
             case 1:
-                universe3 = new Universe3(settings, MainActivity.this, context, textView);
+                //universe3 = new Universe3(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder,universe3);
                 break;
             case 2:
-                universe1 = new Universe1(settings, MainActivity.this, context, textView);
+                //universe1 = new Universe1(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe1);
                 break;
         }
         // Commit the changes
+        if(!isplaying)soundPool.load(context, R.raw.arrow, 1);
         fts.commit();
         currentUniverse = (currentUniverse + 1) % 3;
     }
@@ -754,7 +770,7 @@ public class MainActivity extends AppCompatActivity {
      * plays the sound for when a satellite is pressed
      */
     static public void playSatelliteSound(Context context){
-        if(!isplaying)test.load(context, R.raw.satellitepress, 1);
+        if(!isplaying)soundPool.load(context, R.raw.satellitepress, 1);
     }
 
     /**
@@ -763,11 +779,25 @@ public class MainActivity extends AppCompatActivity {
     static public void playPlanetSound(boolean purchased, Context context) {
         if (!isplaying) {
             if (purchased) {
-                test.load(context, R.raw.buttonpress, 1);
+                soundPool.load(context, R.raw.buttonpress, 1);
             } else {
-                test.load(context, R.raw.buttondull, 1);
+                soundPool.load(context, R.raw.buttondull, 1);
             }
         }
+    }
+
+    /**
+     * plays the sound for when a button is pressed
+     */
+    static public void playButtonSound(Context context){
+        if(!isplaying)soundPool.load(context, R.raw.pressdown, 1);
+    }
+
+    /**
+     * plays the sound for when a button is released
+     */
+    static public void playButtonSoundUp(Context context){
+        if(!isplaying)soundPool.load(context, R.raw.pressup, 1);
     }
 
     /**
@@ -775,9 +805,9 @@ public class MainActivity extends AppCompatActivity {
      * @param v
      */
     public void startMiniGame(View v){
-        if(!isplaying)music.pause();
-        if(!minigameAd){showminigameAd();}
+        if(!minigameAd){ showminigameAd();}
         if(minigameAd) {
+            if(!isplaying)music.pause();
             Intent intent = new Intent(this, MiniGame.class);
             startActivity(intent);
             //where right side is current view
