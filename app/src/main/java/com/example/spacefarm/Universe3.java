@@ -59,6 +59,7 @@ public class Universe3 extends Fragment {
     private AnimatorSet[] pulse;
     private boolean firstcreate;
     private boolean gamecomplete;
+    private boolean popupcreated;
 
     public Universe3(SharedPreferences settings, Activity activity, Context context, TextView view){
         this.settings = settings;
@@ -84,6 +85,7 @@ public class Universe3 extends Fragment {
         unlocked = settings.getBoolean("universe3", temp);
         gamecomplete = settings.getBoolean("gamecomplete", false);
         firstcreate = true;
+        popupcreated = false;
     }
 
 
@@ -198,6 +200,9 @@ public class Universe3 extends Fragment {
         }
     }
     public void showPopup(View v){
+        if(popupcreated){
+            return;
+        }
         final View satelliteview = v;
         RotateAnimation rotate = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotate.setDuration(500);
@@ -343,8 +348,11 @@ public class Universe3 extends Fragment {
                 rotate.setFillAfter(true);
                 rotate.setInterpolator(new LinearInterpolator());
                 satelliteview.startAnimation(rotate);
+                popupcreated = false;
             }
         });
+
+        popupcreated = true;
 
     }
 

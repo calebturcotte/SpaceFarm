@@ -48,6 +48,7 @@ public class Universe1 extends Fragment {
     private int satelliteselect;
     private AnimatorSet[] pulse;
     private boolean firstcreate;
+    private boolean popupcreated;
 
     public Universe1(SharedPreferences settings, Activity activity, Context context, TextView view){
         this.settings = settings;
@@ -55,6 +56,7 @@ public class Universe1 extends Fragment {
         this.context = context;
         moneyview = view;
         firstcreate = true;
+        popupcreated = false;
     }
 
 
@@ -182,6 +184,9 @@ public class Universe1 extends Fragment {
      * @param v: satelliteview clicked
      */
     public void showPopup(View v){
+        if(popupcreated){
+            return;
+        }
         final View satelliteview = v;
         RotateAnimation rotate = new RotateAnimation(0, 180, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotate.setDuration(500);
@@ -338,8 +343,11 @@ public class Universe1 extends Fragment {
                 rotate.setFillAfter(true);
                 rotate.setInterpolator(new LinearInterpolator());
                 satelliteview.startAnimation(rotate);
+                popupcreated = false;
             }
         });
+
+        popupcreated = true;
 
     }
 
