@@ -15,6 +15,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import java.util.Random;
 
 
 public class FarmTouch implements View.OnTouchListener{
@@ -29,6 +30,7 @@ public class FarmTouch implements View.OnTouchListener{
     private Activity activity;
     private AnimatorSet scaleDown;
     private Context context;
+    private Random random;
 
     public FarmTouch(ImageView planet, TextView view, Farm farm, Context context, Activity activity, Boolean bought){
         this.planet = planet;
@@ -38,6 +40,7 @@ public class FarmTouch implements View.OnTouchListener{
         this.farm = farm;
         this.bought = bought;
         this.activity = activity;
+        random = new Random();
 
     }
     public boolean onTouch(View v, MotionEvent event) {
@@ -54,7 +57,7 @@ public class FarmTouch implements View.OnTouchListener{
                 scaleDown.play(scaleDownX).with(scaleDownY);
                 if(bought) {
                     money = MainActivity.money;
-                    int earnings = farm.contains();
+                    long earnings = farm.contains();
                     money += earnings;
                     farm.reset();//resets any money that might be inside the farm
                     saveCash();//saves the money to shared preferences
@@ -98,23 +101,30 @@ public class FarmTouch implements View.OnTouchListener{
         bought = !bought;
     }
 
-    public void createText(int earnings,MotionEvent event){
+    /**
+     * Display text for amount earned by the tap
+     * @param earnings the earnings to display
+     * @param event touch event where we get coordinates
+     */
+    public void createText(long earnings,MotionEvent event){
         final ConstraintLayout framelayout = activity.findViewById(R.id.zoomView);
         final FrameLayout applayout = new FrameLayout(activity);
         ConstraintLayout.LayoutParams mParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT*2);
         final TextView popuptext = new TextView(activity);
-        int x = (int) event.getX();
-        int y = (int) event.getY();
+        int x = (int) event.getX()/2-10;
+        int y = (int) event.getY()/2-10;
         int planetx = (int) planet.getX();
         int planety = (int) planet.getY();
         //popup text for money earned
         if (x != 0 && y != 0) {
             applayout.setLayoutParams(mParams);
-            applayout.setPadding(x + planetx, y + planety, 0, 0);
+            int ranx = random.nextInt(100);
+            int rany = random.nextInt(100);
+            applayout.setPadding(x + planetx + ranx, y + planety + rany, 0, 0);
             popuptext.setLayoutParams(mParams);
-            String gain = "+"+earnings;
+            String gain = "+"+MainActivity.calculateCash(earnings);
             popuptext.setText(gain);
-            popuptext.setTextSize(20);
+            popuptext.setTextSize(25);
             popuptext.setTextColor(Color.parseColor("#39FF14"));
             popuptext.setShadowLayer(10,0,0,Color.BLACK);
             applayout.addView(popuptext);

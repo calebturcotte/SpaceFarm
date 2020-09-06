@@ -6,14 +6,15 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Path;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -22,6 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 import android.os.CountDownTimer;
+import android.transition.Fade;
+import android.transition.TransitionManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,6 +35,8 @@ import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -43,9 +48,10 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -74,7 +80,9 @@ public class MainActivity extends AppCompatActivity {
     static boolean minigameAd;
     static CountDownTimer minigameUseTimer;
     static long timedifference;
-
+    boolean firstabout;
+    boolean firstTimetoday;
+    int daysmultiplier;
 
     @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -189,6 +197,53 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
+        //compare the time that the app spent closed
+        Date oldDate = new Date(settings.getLong("currenttime", 0L));
+        Date currentDate = new Date();
+        timedifference= 0L;
+        if(!oldDate.equals(new Date(0))) {
+            long oldtime = oldDate.getTime();
+            long newtime = currentDate.getTime();
+            timedifference = (newtime-oldtime)/1000L;
+        }
+
+        //fetch our first login of the day info
+        firstTimetoday = settings.getBoolean("firstTimetoday", true);
+        daysmultiplier = settings.getInt("daysmultiplier", 1);
+        if(!firstTimetoday){
+            Calendar newcalendar = Calendar.getInstance();
+            Calendar oldcalendar = Calendar.getInstance();
+            oldcalendar.setTime(oldDate);
+            oldcalendar.set(Calendar.HOUR_OF_DAY, 0);
+            oldcalendar.set(Calendar.MINUTE, 0);
+            oldcalendar.set(Calendar.SECOND, 0);
+            oldcalendar.set(Calendar.MILLISECOND, 0);
+
+            newcalendar.set(Calendar.HOUR_OF_DAY, 0);
+            newcalendar.set(Calendar.MINUTE, 0);
+            newcalendar.set(Calendar.SECOND, 0);
+            newcalendar.set(Calendar.MILLISECOND, 0);
+            double daycount = TimeUnit.MILLISECONDS.toDays(
+                    Math.abs(newcalendar.getTimeInMillis() - oldcalendar.getTimeInMillis()));
+            if( daycount > 0){
+                firstTimetoday = true;
+                if(daycount == 1){
+                    if(daysmultiplier < 14) {
+                        daysmultiplier = daysmultiplier + 1;
+                    }
+                }
+                else{
+                    daysmultiplier = 1;
+                }
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putInt("daysmultiplier", daysmultiplier);
+                editor.apply();
+            }
+        }
+
+
+        firstabout = settings.getBoolean("mainabout", true);
+
         final ImageView rightscroll = findViewById(R.id.right_arrow);
         rightscroll.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -203,6 +258,50 @@ public class MainActivity extends AppCompatActivity {
                 //Toolbar toolbar1 = findViewById(R.id.toolbar);
                 getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+                if(firstTimetoday){
+                    final long reward =(long) Math.pow(10, daysmultiplier)*10;
+                    LayoutInflater logininflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                    assert logininflater != null;
+                    View loginView = logininflater.inflate(R.layout.daily_login, null);
+                    // create the popup window
+                    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    boolean focusable = false; // lets taps outside the popup also dismiss it
+                    final PopupWindow loginWindow = new PopupWindow(loginView, width, height, focusable);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        loginWindow.setElevation(20);
+                    }
+
+                    loginWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                        @Override
+                        public void onDismiss() {
+                            firstTimetoday = false;
+                            saveCash();
+                            SharedPreferences.Editor editor = settings.edit();
+                            editor.putBoolean("firstTimetoday",false);
+                            editor.apply();
+                        }
+                    });
+                    loginWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+                    Button claimButton = loginView.findViewById(R.id.claim);
+                    claimButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            playButtonSound(context);
+                            money = money + reward;
+                            view.setText(calculateCash(money));
+                            loginWindow.dismiss();
+                        }
+                    });
+
+                    TextView loginText = loginView.findViewById(R.id.logintext);
+                    String rewardString = "Thank you for Playing!\nEarned: " + calculateCash(reward);
+                    loginText.setText(rewardString);
+
+                }
+                if(firstabout){
+                    about();
+                }
                 rightscroll.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -239,15 +338,6 @@ public class MainActivity extends AppCompatActivity {
         boosters.play(scaleUpX2).with(scaleUpY2);
         boosters.start();
 
-        //compare the time that the app spent closed
-        Date oldDate = new Date(settings.getLong("currenttime", 0L));
-        Date currentDate = new Date();
-        timedifference= 0L;
-        if(!oldDate.equals(new Date(0))) {
-            long oldtime = oldDate.getTime();
-            long newtime = currentDate.getTime();
-            timedifference = (newtime-oldtime)/1000L;
-        }
 
         // resume timer for minigame if needed
         long minigameAdtime = settings.getLong("minigameAd", 0L);
@@ -265,6 +355,103 @@ public class MainActivity extends AppCompatActivity {
         if(boostertime > 0L){
             startTimer(boostertime);
         }
+
+
+    }
+
+    private void about(){
+        final int[] currentabout = {0};
+        LayoutInflater aboutinflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        assert aboutinflater != null;
+        final View aboutView = aboutinflater.inflate(R.layout.popup_about, null);
+        int width2 = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height2 = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable2 = true; // lets taps outside the popup also dismiss it
+        final PopupWindow aboutWindow = new PopupWindow(aboutView, width2, height2, focusable2);
+        aboutWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                firstabout = false;
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putBoolean("mainabout",false);
+                editor.apply();
+            }
+        });
+
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            aboutWindow.setElevation(20);
+        }
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window token
+        aboutWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+        aboutView.findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                aboutWindow.dismiss();
+            }
+        });
+
+        Animation leftscrollanimation = AnimationUtils.loadAnimation(context, R.anim.leftarrow);
+        Animation rightscrollanimation = AnimationUtils.loadAnimation(context, R.anim.rightarrow);
+        aboutView.findViewById(R.id.right_arrow_popup).startAnimation(rightscrollanimation);
+        aboutView.findViewById(R.id.left_arrow_popup).startAnimation(leftscrollanimation);
+
+        final View about1 = aboutinflater.inflate(R.layout.aboutmain1, null);
+        final View about2 = aboutinflater.inflate(R.layout.aboutmain2, null);
+        final View about3 = aboutinflater.inflate(R.layout.aboutmain3, null);
+
+        final FrameLayout frmlayout = (FrameLayout) aboutView.findViewById(R.id.aboutplaceholder);
+        frmlayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                frmlayout.addView(about2,0);
+                frmlayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
+        aboutView.findViewById(R.id.right_arrow_popup).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View v) {
+                currentabout[0] = (currentabout[0] +1)%3;
+                frmlayout.removeAllViews();
+                Fade mFade = new Fade(Fade.IN);
+                if(!isplaying)playButtonSound(context);
+                TransitionManager.beginDelayedTransition(frmlayout, mFade);
+                if(currentabout[0] == 0){
+                    frmlayout.addView(about2, 0);
+                }
+                else if(currentabout[0] == 1){
+                    frmlayout.addView(about3, 0);
+                }
+                else if(currentabout[0] == 2){
+                    frmlayout.addView(about1, 0);
+                }
+            }
+        });
+
+        aboutView.findViewById(R.id.left_arrow_popup).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View v) {
+                currentabout[0] = (currentabout[0] +2)%3;
+                frmlayout.removeAllViews();
+                if(!isplaying)playButtonSound(context);
+                Fade mFade = new Fade(Fade.IN);
+                TransitionManager.beginDelayedTransition(frmlayout, mFade);
+                if(currentabout[0] == 0){
+                    frmlayout.addView(about2, 0);
+                }
+                else if(currentabout[0] == 1){
+                    frmlayout.addView(about3, 0);
+                }
+                else if(currentabout[0] == 2){
+                    frmlayout.addView(about1, 0);
+                }
+            }
+        });
 
     }
 
@@ -294,6 +481,10 @@ public class MainActivity extends AppCompatActivity {
                                 universe1.reset();
                                 universe2.reset();
                                 universe3.reset();
+                                SharedPreferences.Editor editor = settings.edit();
+                                editor.putInt("daysmultiplier", 1);
+                                editor.putBoolean("gamecomplete", false);
+                                editor.apply();
                             }
                         });
                 builder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
@@ -370,25 +561,13 @@ public class MainActivity extends AppCompatActivity {
                 });
                 return true;
             case R.id.about:
-                LayoutInflater inflater2 = (LayoutInflater)
-                        getSystemService(LAYOUT_INFLATER_SERVICE);
-                assert inflater2 != null;
-                final View optionsView2 = inflater2.inflate(R.layout.popup_about, null);
-                int width2 = LinearLayout.LayoutParams.WRAP_CONTENT;
-                int height2 = LinearLayout.LayoutParams.WRAP_CONTENT;
-                boolean focusable2 = true; // lets taps outside the popup also dismiss it
-                final PopupWindow optionsWindow2 = new PopupWindow(optionsView2, width2, height2, focusable2);
-
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    optionsWindow2.setElevation(20);
-                }
-                // show the popup window
-                // which view you pass in doesn't matter, it is only used for the window token
-                optionsWindow2.showAtLocation(view, Gravity.CENTER, 0, 0);
+                about();
                 return true;
             case R.id.minigame:
                 startMiniGame(null);
                 return true;
+            case R.id.rate:
+                rateGame();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -848,6 +1027,17 @@ public class MainActivity extends AppCompatActivity {
             editor.putLong("minigameAd", 0L);
             editor.apply();
             minigameAd = true;
+        }
+    }
+
+    /**
+     * Rate the game on the playstore
+     */
+    public void rateGame(){
+        try{
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
+        } catch (ActivityNotFoundException e){
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName())));
         }
     }
 }

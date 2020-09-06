@@ -458,7 +458,7 @@
             android:layout_marginStart="15dp"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="70dp"
-            android:background="@drawable/ic_2x2"
+            android:background="@drawable/buttontop2x"
             android:onClick="showAd"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"

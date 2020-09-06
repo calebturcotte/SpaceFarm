@@ -30,7 +30,7 @@ public class Farm {
      * maxmoney: the maximum money that can be stored by autofarm
      */
     private int money;
-    final private int scale;
+    final private long scale;
     private int modifier;
     private boolean upkeep;
     private CountDownTimer time;
@@ -44,9 +44,10 @@ public class Farm {
     private TextView barText;
     private int maxmoney = 10;
     private ObjectAnimator baranimator;
+    private long countdownvalue;
 
 
-    public Farm(int universe, final int scale, final int modifier, final ImageView farmbutton, Activity activity, LayoutInflater inflater){
+    public Farm(int universe, final long scale, final int modifier, final ImageView farmbutton, Activity activity, LayoutInflater inflater){
         this.scale = scale;
         this.universe = universe;
         SharedPreferences sharedPrefs = activity.getApplicationContext().getSharedPreferences("MyPrefsFile", 0);
@@ -82,20 +83,28 @@ public class Farm {
 
         editor = sharedPrefs.edit();
 
-        //uncountedTime();
+        if(universe == 1){
+            countdownvalue = (2000*scale);
+        }
+        else if(universe == 2){
+            countdownvalue = (100*scale);
+        }
+        else if(universe == 3){
+            countdownvalue = (long)(scale/2.0);
+        }
         container.setText(String.valueOf(money));
     }
 
     /**
      * @return the money that the farm contains, either the scale itself or the farm value if enabled
      */
-    public int contains(){
+    public long contains(){
         if(upkeep) {
             if(money >= maxmoney){
                 barText.setText("");
                 bar.setProgress(0);
                 baranimator = ObjectAnimator.ofInt(bar, "progress", 100)
-                        .setDuration((2000 * scale));
+                        .setDuration((countdownvalue));
                 baranimator.start();
                 time.start();
             }
@@ -116,13 +125,13 @@ public class Farm {
             if(money < maxmoney) {
                 bar.setProgress((int)(100-percent));
                 baranimator = ObjectAnimator.ofInt(bar, "progress", (int)(100-percent), 100)
-                        .setDuration((long)((2000*scale)*((percent)/100.0)));
+                        .setDuration((long)((countdownvalue)*((percent)/100.0)));
                 baranimator.start();
-                time = new CountDownTimer((long) ((2000*scale)*((percent)/100.0)), 500) {
+                time = new CountDownTimer((long) ((countdownvalue)*((percent)/100.0)), 500) {
                     @Override
                     public void onTick(long millisUntilFinished) {
-                        long seconds = millisUntilFinished / 1000 + (long)((100-percent)/100.0)*(2000*scale);
-                        percent = (seconds / (2.0*scale))*100;
+                        long seconds = millisUntilFinished / 1000 + (long)((100-percent)/100.0)*(countdownvalue);
+                        percent = (seconds / (countdownvalue/1000.0))*100;
                         if(percent > 100)percent = 100;
                         bar.setProgress((int)((100-percent)));
                         String tempString =(int)(100-percent) + "%" ;
@@ -135,7 +144,7 @@ public class Farm {
                         if(money < (maxmoney-1)) {
                             bar.setProgress(0);
                     ObjectAnimator.ofInt(bar, "progress", 100)
-                            .setDuration(2000 * scale)
+                            .setDuration(countdownvalue)
                             .start();
                             setTimer();
                             time.start();
@@ -197,8 +206,8 @@ public class Farm {
     /**
      * @return current cost to upgrade
      */
-    protected int upgradeCost(){
-        return (int) (scale * Math.pow(1.15,modifier));
+    protected long upgradeCost(){
+        return (long) (scale * Math.pow(1.15,modifier));
     }
 
     /**
@@ -211,7 +220,7 @@ public class Farm {
     /**
      * @return the original scale for this farm
      */
-    protected int getScale(){
+    protected long getScale(){
         return scale;
     }
     /**
@@ -230,11 +239,11 @@ public class Farm {
      *
      * @return the money earned by selling the farm and all of its assets
      */
-    int sellCost(){
+    long sellCost(){
         if(upkeep) {
-            return (int) ((scale * Math.pow(1.15,modifier-1))*modifier)/4+scale*50;
+            return (long) ((scale * Math.pow(1.15,modifier-1))*modifier)/4+scale*50;
         }
-        return ((int) (scale * Math.pow(1.15,modifier-1))*modifier)/4;
+        return ((long) (scale * Math.pow(1.15,modifier-1))*modifier)/4;
     }
 
     /**
@@ -265,11 +274,11 @@ public class Farm {
      * sets the timer used for auto farm
      */
     private void setTimer(){
-        time = new CountDownTimer(2000*scale, 500) {
+        time = new CountDownTimer(countdownvalue, 500) {
             @Override
             public void onTick(long millisUntilFinished) {
                 long seconds = millisUntilFinished / 1000;
-                percent = (seconds / (2.0*scale))*100;
+                percent = (seconds / (countdownvalue/1000.0))*100;
                 String tempString = (int)(100-percent)+"%";
                 barText.setText(tempString);
                 saveTimer((int)percent);
@@ -280,7 +289,7 @@ public class Farm {
                 if(money < (maxmoney-1)) {
                     bar.setProgress(0);
                     baranimator = ObjectAnimator.ofInt(bar, "progress", 100)
-                            .setDuration(2000 * scale);
+                            .setDuration(countdownvalue);
                     baranimator.start();
                     time.start();
                 }else {
@@ -310,14 +319,14 @@ public class Farm {
      * calculates the time that was not accounted for while the app was closed
      */
     public void uncountedTime(){
-        long secondssofar = (long)((100-percent)/100.0)*(2000*scale) + MainActivity.timedifference*1000L;
-        long remainingtime = secondssofar%((2000*scale)+1);
+        long secondssofar = (long)((100-percent)/100.0)*(countdownvalue) + MainActivity.timedifference*1000L;
+        long remainingtime = secondssofar%((countdownvalue)+1);
 
-        int totaltimes = (int) ((secondssofar) / (2000 * scale));
+        int totaltimes = (int) ((secondssofar) / (countdownvalue));
         if((money + totaltimes) < 10) {
             money = (money + totaltimes);
 
-            percent = (((remainingtime / (2.0 * scale)) * 100) + percent) % (101);
+            percent = (((remainingtime / (countdownvalue/1000.0)) * 100) + percent) % (101);
         }
         else {
             money = 10;

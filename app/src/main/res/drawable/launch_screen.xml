@@ -7,13 +7,13 @@
 
     <item>
         <bitmap
-        android:src="@drawable/backgroundv2"/>
+        android:src="@drawable/background_material"/>
     </item>
 
     <item>
 
         <bitmap
-            android:src="@drawable/planet1"
+            android:src="@drawable/logo"
             android:gravity="center"/>
 
     </item>

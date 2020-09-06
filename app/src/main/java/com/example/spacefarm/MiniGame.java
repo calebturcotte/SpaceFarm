@@ -14,11 +14,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.transition.Fade;
+import android.transition.TransitionManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
@@ -31,6 +35,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
@@ -61,6 +67,7 @@ public class MiniGame extends AppCompatActivity {
     Context context;
     private int bombs;
     private int totalmeteors;
+    private boolean firstabout;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -169,6 +176,15 @@ public class MiniGame extends AppCompatActivity {
                 soundPool.play(sampleId, (float)soundeffectvolume/100, (float)soundeffectvolume/100, 1, 0, 1.0f);
             }
         });
+
+        firstabout = settings.getBoolean("minigameabout", true);
+        findViewById(R.id.about).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            public void onGlobalLayout() {
+                if(firstabout){
+                    about();
+                }
+                findViewById(R.id.about).getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }});
     }
 
     /**
@@ -229,13 +245,25 @@ public class MiniGame extends AppCompatActivity {
      * create an information popup about the minigame
      */
     public void about(){
-        LayoutInflater inflater2 = (LayoutInflater)
+        final int[] currentabout = {0};
+        final LayoutInflater inflater2 = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
         assert inflater2 != null;
         final View aboutView = inflater2.inflate(R.layout.popup_minigameabout, null);
         int width2 = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height2 = LinearLayout.LayoutParams.WRAP_CONTENT;
         final PopupWindow aboutWindow = new PopupWindow(aboutView, width2, height2, true);
+
+        aboutWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                firstabout = false;
+                SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putBoolean("minigameabout", false);
+                editor.apply();
+            }
+        });
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             aboutWindow.setElevation(20);
@@ -250,6 +278,66 @@ public class MiniGame extends AppCompatActivity {
                 aboutWindow.dismiss();
             }
         });
+        Animation leftscrollanimation = AnimationUtils.loadAnimation(context, R.anim.leftarrow);
+        Animation rightscrollanimation = AnimationUtils.loadAnimation(context, R.anim.rightarrow);
+        aboutView.findViewById(R.id.right_arrow_popup).startAnimation(rightscrollanimation);
+        aboutView.findViewById(R.id.left_arrow_popup).startAnimation(leftscrollanimation);
+
+        final View about1 = inflater2.inflate(R.layout.about1, null);
+        final View about2 = inflater2.inflate(R.layout.about2, null);
+        final View about3 = inflater2.inflate(R.layout.about3, null);
+
+        final FrameLayout frmlayout = (FrameLayout) aboutView.findViewById(R.id.aboutplaceholder);
+        frmlayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                frmlayout.addView(about1,0);
+                frmlayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
+
+        aboutView.findViewById(R.id.right_arrow_popup).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View v) {
+                currentabout[0] = (currentabout[0] +1)%3;
+                frmlayout.removeAllViews();
+                Fade mFade = new Fade(Fade.IN);
+                if(!isplaying)soundPool.load(context, R.raw.pressdown, 1);
+                TransitionManager.beginDelayedTransition(frmlayout, mFade);
+                if(currentabout[0] == 0){
+                    frmlayout.addView(about1, 0);
+                }
+                else if(currentabout[0] == 1){
+                    frmlayout.addView(about2, 0);
+                }
+                else if(currentabout[0] == 2){
+                    frmlayout.addView(about3, 0);
+                }
+            }
+        });
+
+        aboutView.findViewById(R.id.left_arrow_popup).setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View v) {
+                currentabout[0] = (currentabout[0] +2)%3;
+                frmlayout.removeAllViews();
+                if(!isplaying)soundPool.load(context, R.raw.pressdown, 1);
+                Fade mFade = new Fade(Fade.IN);
+                TransitionManager.beginDelayedTransition(frmlayout, mFade);
+                if(currentabout[0] == 0){
+                    frmlayout.addView(about1, 0);
+                }
+                else if(currentabout[0] == 1){
+                    frmlayout.addView(about2, 0);
+                }
+                else if(currentabout[0] == 2){
+                    frmlayout.addView(about3, 0);
+                }
+            }
+        });
+
     }
 
     /**
@@ -444,7 +532,10 @@ public class MiniGame extends AppCompatActivity {
         TextView text = findViewById(R.id.text);
         text.setVisibility(View.VISIBLE);
         long tempmoney = MainActivity.money;
-        int moneyprize = (int)(tempmoney*(points/50.0)*0.05+ 0.5);
+        long moneyprize = (long)(tempmoney*(points/50.0)*0.05+ 0.5);
+        if(moneyprize < 100){
+            moneyprize = 100;
+        }
         String end = "Earned "+ MainActivity.calculateCash(moneyprize);
         text.setText(end);
         gameplayed = true;

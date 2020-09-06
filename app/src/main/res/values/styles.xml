@@ -21,7 +21,7 @@
 <!--        <item name="android:itemBackground">@drawable/ic_moneybar</item>-->
     </style>
     <style name="SplashScreen" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/splashpage</item>
+        <item name="android:windowBackground">@drawable/launch_page</item>
         <item name="colorPrimaryDark">@null</item>
     </style>
 

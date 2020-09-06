@@ -5,12 +5,15 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -55,6 +58,7 @@ public class Universe3 extends Fragment {
     private PopupWindow popupWindow;
     private AnimatorSet[] pulse;
     private boolean firstcreate;
+    private boolean gamecomplete;
 
     public Universe3(SharedPreferences settings, Activity activity, Context context, TextView view){
         this.settings = settings;
@@ -78,6 +82,7 @@ public class Universe3 extends Fragment {
         }
         boolean temp = false;
         unlocked = settings.getBoolean("universe3", temp);
+        gamecomplete = settings.getBoolean("gamecomplete", false);
         firstcreate = true;
     }
 
@@ -106,14 +111,14 @@ public class Universe3 extends Fragment {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public void onGlobalLayout() {
-                farm.add(new Farm(3,1000, modifier.get(0), farmbutton[0], activity, inflater));
-                farm.add(new Farm(3,5000, modifier.get(1), farmbutton[1], activity, inflater));
-                farm.add(new Farm(3,10000, modifier.get(2), farmbutton[2], activity, inflater));
-                farm.add(new Farm(3,50000, modifier.get(3), farmbutton[3], activity, inflater));
-                farm.add(new Farm(3,100000, modifier.get(4), farmbutton[4], activity, inflater));
-                farm.add(new Farm(3,500000, modifier.get(5), farmbutton[5], activity, inflater));
-                farm.add(new Farm(3,1000000, modifier.get(6), farmbutton[6], activity, inflater));
-                farm.add(new Farm(3,10000000, modifier.get(7), farmbutton[7], activity, inflater));
+                farm.add(new Farm(3,20000, modifier.get(0), farmbutton[0], activity, inflater));
+                farm.add(new Farm(3,10000, modifier.get(1), farmbutton[1], activity, inflater));
+                farm.add(new Farm(3,20000, modifier.get(2), farmbutton[2], activity, inflater));
+                farm.add(new Farm(3,100000, modifier.get(3), farmbutton[3], activity, inflater));
+                farm.add(new Farm(3,200000, modifier.get(4), farmbutton[4], activity, inflater));
+                farm.add(new Farm(3,10000000, modifier.get(5), farmbutton[5], activity, inflater));
+                farm.add(new Farm(3,20000000, modifier.get(6), farmbutton[6], activity, inflater));
+                farm.add(new Farm(3,200000000, modifier.get(7), farmbutton[7], activity, inflater));
 
                 for (int i = 0; i < totalplanets; i++){
                     touchcontrol.add(new FarmTouch(farmbutton[i],moneyview, farm.get(i), context, activity, boughtfarm.get(i)));
@@ -253,7 +258,7 @@ public class Universe3 extends Fragment {
                 buyFarm(popupView,satelliteselect,toast,text, popupWindow);
             }
         });
-        String buyString = "Buy ("+ MainActivity.calculateCash((int)(farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1)))+")";
+        String buyString = "Buy ("+ MainActivity.calculateCash((long)(farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1)*2500L))+")";
         buyButton.setText(buyString);
 
         Button upgradeButton = (Button) popupView.findViewById(R.id.upgrade);
@@ -264,7 +269,7 @@ public class Universe3 extends Fragment {
                 upgradeFarm(popupView,satelliteselect,toast,text);
             }
         });
-        String upgradeString = "Upgrade ("+ farm.get(satelliteselect).upgradeCost()+"$)";
+        String upgradeString = "Upgrade ("+ MainActivity.calculateCash(farm.get(satelliteselect).upgradeCost())+")";
         upgradeButton.setText(upgradeString);
 
         Button sellButton = (Button) popupView.findViewById(R.id.sell);
@@ -301,12 +306,12 @@ public class Universe3 extends Fragment {
         String sellString = "Sell ("+ MainActivity.calculateCash(farm.get(satelliteselect).sellCost())+")";
         sellButton.setText(sellString);
 
-        Button autoButton = (Button) popupView.findViewById(R.id.auto);
+        final Button autoButton = (Button) popupView.findViewById(R.id.auto);
         autoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MainActivity.playButtonSound(context);
-                autoFarm(popupView,satelliteselect,toast,text);
+                autoFarm(popupView,satelliteselect,toast,text, autoButton);
             }
         });
         String autoString = "Auto \nFarm ("+ MainActivity.calculateCash(farm.get(satelliteselect).getScale()*100)+")";
@@ -346,8 +351,8 @@ public class Universe3 extends Fragment {
 
     public void buyFarm(View v, int satelliteselect, Toast toast, TextView text, PopupWindow popupWindow){
         String buy;
-        if(MainActivity.money >= farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1)){
-            MainActivity.money = MainActivity.money - (long)(farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1));
+        if(MainActivity.money >= (long)farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1)*2500L){
+            MainActivity.money = MainActivity.money - (long)(farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1)*2500L);
             boughtfarm.set(satelliteselect,true);
             touchcontrol.get(satelliteselect).buyFarm();
             saveBought(satelliteselect+16,boughtfarm.get(satelliteselect));
@@ -359,6 +364,9 @@ public class Universe3 extends Fragment {
             ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
             farmbutton[satelliteselect].setColorFilter(cf);
             pulse[satelliteselect].start();
+            if(satelliteselect == 7 && !gamecomplete){
+                gameFinished();
+            }
         }
         else {
             buy = "Not enough funds to buy this Planet";
@@ -383,10 +391,10 @@ public class Universe3 extends Fragment {
         text.setText(upgrade);
         toast.show();
         Button upgradeButton = (Button) v.findViewById(R.id.upgrade);
-        String upgradeString = "Upgrade ("+ farm.get(satelliteselect).upgradeCost()+"$)";
+        String upgradeString = "Upgrade ("+ MainActivity.calculateCash(farm.get(satelliteselect).upgradeCost())+")";
         upgradeButton.setText(upgradeString);
         Button sellButton = (Button) v.findViewById(R.id.sell);
-        String sellString = "Sell ("+ farm.get(satelliteselect).sellCost()+"$)";
+        String sellString = "Sell ("+ MainActivity.calculateCash(farm.get(satelliteselect).sellCost())+")";
         sellButton.setText(sellString);
         moneyview.setText(MainActivity.calculateCash(MainActivity.money));
     }
@@ -412,20 +420,20 @@ public class Universe3 extends Fragment {
         popupWindow.dismiss();
     }
 
-    public void autoFarm(View v, int satelliteselect, Toast toast, TextView text){
+    public void autoFarm(View v, int satelliteselect, Toast toast, TextView text, Button thisbutton){
         String auto;
         if(MainActivity.money >= farm.get(satelliteselect).getScale()*100) {
             farm.get(satelliteselect).enable();
             MainActivity.money = MainActivity.money - farm.get(satelliteselect).getScale()*100;
             auto = "Planet #" + (satelliteselect + 1) + " can now be farmed automatically.";
             saveAuto(satelliteselect+16,true);
-            v.setVisibility(View.GONE);
+            thisbutton.setVisibility(View.GONE);
         }
         else {
             auto = "Not enough funds to purchase this upgrade";
         }
         Button sellButton = (Button) v.findViewById(R.id.sell);
-        String sellString = "Sell ("+ farm.get(satelliteselect).sellCost()+"$)";
+        String sellString = "Sell ("+ MainActivity.calculateCash(farm.get(satelliteselect).sellCost())+")";
         sellButton.setText(sellString);
         text.setText(auto);
         toast.show();
@@ -455,6 +463,58 @@ public class Universe3 extends Fragment {
         }
     }
 
+    /**
+     * Display the game finished menu once all planets have been bought
+     */
+    void gameFinished(){
+        LayoutInflater gameFinishedinflater = getLayoutInflater();
+        assert gameFinishedinflater != null;
+        final View gameFinishedView = gameFinishedinflater.inflate(R.layout.gamecomplete, null);
+        int width2 = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height2 = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable2 = true; // lets taps outside the popup also dismiss it
+        final PopupWindow gameFinishedWindow = new PopupWindow(gameFinishedView, width2, height2, focusable2);
+        gameFinishedWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                gamecomplete = true;
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putBoolean("gamecomplete",true);
+                editor.apply();
+            }
+        });
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            gameFinishedWindow.setElevation(20);
+        }
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window token
+        gameFinishedWindow.showAtLocation(moneyview, Gravity.CENTER, 0, 0);
+        gameFinishedView.findViewById(R.id.playmore).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.playButtonSound(context);
+                gameFinishedWindow.dismiss();
+            }
+        });
+
+        gameFinishedView.findViewById(R.id.rate).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try{
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getActivity().getPackageName())));
+                } catch (ActivityNotFoundException e){
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + getActivity().getPackageName())));
+                }
+            }
+        });
+    }
+
+
+    /**
+     * Sets all the planets booster values in the universe
+     * @param value the value for the booster
+     */
     void setBooster(int value){
         for (int i = 0; i < totalplanets; i++){
             farm.get(i).setBooster(value);

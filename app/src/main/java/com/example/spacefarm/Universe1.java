@@ -262,7 +262,7 @@ public class Universe1 extends Fragment {
             }
         });
         Button buyButton = (Button) popupView.findViewById(R.id.buy);
-        String buyString = "Buy ("+ MainActivity.calculateCash((int)(farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1)))+")";
+        String buyString = "Buy ("+ MainActivity.calculateCash((long)(farm.get(satelliteselect).getScale()*Math.pow(5,satelliteselect+1)))+")";
         buyButton.setText(buyString);
         popupView.findViewById(R.id.upgrade).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -272,7 +272,7 @@ public class Universe1 extends Fragment {
             }
         });
         Button upgradeButton = (Button) popupView.findViewById(R.id.upgrade);
-        String upgradeString = "Upgrade ("+ farm.get(satelliteselect).upgradeCost()+"$)";
+        String upgradeString = "Upgrade ("+ MainActivity.calculateCash(farm.get(satelliteselect).upgradeCost())+")";
         upgradeButton.setText(upgradeString);
         popupView.findViewById(R.id.sell).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -307,15 +307,15 @@ public class Universe1 extends Fragment {
         Button sellButton = (Button) popupView.findViewById(R.id.sell);
         String sellString = "Sell ("+ MainActivity.calculateCash(farm.get(satelliteselect).sellCost())+")";
         sellButton.setText(sellString);
-        popupView.findViewById(R.id.auto).setOnClickListener(new View.OnClickListener() {
+        final Button autoButton = (Button) popupView.findViewById(R.id.auto);
+        autoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MainActivity.playButtonSound(context);
-                autoFarm(popupView,satelliteselect,toast,text);
+                autoFarm(popupView,satelliteselect,toast,text, autoButton);
             }
         });
-        Button autoButton = (Button) popupView.findViewById(R.id.auto);
-        String autoString = "Auto \nFarm ("+ MainActivity.calculateCash(farm.get(satelliteselect).getScale()*100)+")";
+        String autoString = "Auto \nFarm ("+ MainActivity.calculateCash(farm.get(satelliteselect).getScale()*100L)+")";
         autoButton.setText(autoString);
 
         if(boughtfarm.get(satelliteselect)){
@@ -383,10 +383,10 @@ public class Universe1 extends Fragment {
         text.setText(upgrade);
         toast.show();
         Button upgradeButton = (Button) v.findViewById(R.id.upgrade);
-        String upgradeString = "Upgrade ("+ farm.get(satelliteselect).upgradeCost()+"$)";
+        String upgradeString = "Upgrade ("+ MainActivity.calculateCash(farm.get(satelliteselect).upgradeCost())+")";
         upgradeButton.setText(upgradeString);
         Button sellButton = (Button) v.findViewById(R.id.sell);
-        String sellString = "Sell ("+ farm.get(satelliteselect).sellCost()+"$)";
+        String sellString = "Sell ("+ MainActivity.calculateCash(farm.get(satelliteselect).sellCost())+")";
         sellButton.setText(sellString);
         moneyview.setText(MainActivity.calculateCash(MainActivity.money));
     }
@@ -414,19 +414,20 @@ public class Universe1 extends Fragment {
         popupWindow.dismiss();
     }
 
-    public void autoFarm(View v, int satelliteselect, Toast toast, TextView text){
+    public void autoFarm(View v, int satelliteselect, Toast toast, TextView text, Button thisbutton){
         String auto;
         if(MainActivity.money >= farm.get(satelliteselect).getScale()*100) {
             farm.get(satelliteselect).enable();
             MainActivity.money = MainActivity.money - farm.get(satelliteselect).getScale()*100;
             auto = "Planet #" + (satelliteselect + 1) + " can now be farmed automatically.";
             saveAuto(satelliteselect,true);
+            thisbutton.setVisibility(View.GONE);
         }
         else {
             auto = "Not enough funds to purchase this upgrade";
         }
         Button sellButton = (Button) v.findViewById(R.id.sell);
-        String sellString = "Sell ("+ farm.get(satelliteselect).sellCost()+"$)";
+        String sellString = "Sell ("+ MainActivity.calculateCash(farm.get(satelliteselect).sellCost())+")";
         sellButton.setText(sellString);
         text.setText(auto);
         toast.show();
