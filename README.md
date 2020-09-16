@@ -2,6 +2,8 @@
 
 Spacefarm is an android clicker game written in JAVA using Android Studio. This app was coded in Java while layouts were defined in xml.
 
+This project is now available to download from the Google Play Store, just follow this [link](https://play.google.com/store/apps/details?id=com.application.spacefarm)
+
 Below is an example of the main screen:
 
 ![](demo.PNG)
