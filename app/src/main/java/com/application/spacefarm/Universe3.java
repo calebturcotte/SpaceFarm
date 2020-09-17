@@ -1,4 +1,4 @@
-package com.example.spacefarm;
+package com.application.spacefarm;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -32,6 +32,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
+
+import com.application.spacefarm.R;
+
 import java.util.ArrayList;
 import java.util.Random;
 

@@ -1,4 +1,4 @@
-package com.example.spacefarm;
+package com.application.spacefarm;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -18,16 +18,13 @@ import android.transition.Fade;
 import android.transition.TransitionManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -35,7 +32,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.rewarded.RewardItem;
@@ -562,6 +558,7 @@ public class MiniGame extends AppCompatActivity {
      * load ad for replaying game
      */
     public void loadAd(){
+        //Put our Ad key below, since this is stored in a public repository we will use the test key below
         rewardedAd = new RewardedAd(this,
                 "ca-app-pub-3940256099942544/5224354917");
         RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {

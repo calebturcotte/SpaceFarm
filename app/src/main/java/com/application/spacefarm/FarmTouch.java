@@ -1,4 +1,4 @@
-package com.example.spacefarm;
+package com.application.spacefarm;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;

@@ -1,4 +1,4 @@
-package com.example.spacefarm;
+package com.application.spacefarm;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -84,10 +84,10 @@ public class Farm {
         editor = sharedPrefs.edit();
 
         if(universe == 1){
-            countdownvalue = (2000*scale);
+            countdownvalue = (2000L*scale);
         }
         else if(universe == 2){
-            countdownvalue = (100*scale);
+            countdownvalue = (100L*scale);
         }
         else if(universe == 3){
             countdownvalue = (long)(scale/2.0);
@@ -332,5 +332,6 @@ public class Farm {
             money = 10;
             percent = 100;
         }
+        saveMoney();
     }
 }

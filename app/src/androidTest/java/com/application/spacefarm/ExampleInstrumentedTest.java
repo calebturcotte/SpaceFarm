@@ -1,4 +1,4 @@
-package com.example.spacefarm;
+package com.application.spacefarm;
 
 import android.content.Context;
 import androidx.test.platform.app.InstrumentationRegistry;

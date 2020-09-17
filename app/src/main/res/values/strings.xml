@@ -39,6 +39,8 @@
     <string name="welcome2">•Tap planets to earn money</string>
     <string name="welcome3">•Tap the harvesters to buy new planets or upgrade bought planets.\n
     •Once Auto Farm is unlocked a Planet will store extra money over time for its next tap!</string>
+    <string name="welcome4">Tap this icon to watch an advertisement and double your tapping income for 1 minute.</string>
+    <string name="welcome5">Tap this icon to play a minigame where you catch falling meteors for extra cash.</string>
     <string name="minigameabout">To play the minigame tap meteors as they fall down. But avoid tapping any bombs!\n
         \n
         •Earn up to 5 percent of your current total of money earned.\n

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.spacefarm">
+    package="com.application.spacefarm">
 
 <!--    <supports-screens-->
 <!--        android:largeScreens="true"-->
@@ -17,7 +17,7 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".MainActivity"
+        <activity android:name="com.application.spacefarm.MainActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/SplashScreen"
@@ -28,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MiniGame"
+        <activity android:name="com.application.spacefarm.MiniGame"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">

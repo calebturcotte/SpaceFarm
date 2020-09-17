@@ -1,4 +1,4 @@
-package com.example.spacefarm;
+package com.application.spacefarm;
 
 
 import android.animation.AnimatorSet;
@@ -43,6 +43,7 @@ import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
@@ -401,6 +402,8 @@ public class MainActivity extends AppCompatActivity {
         final View about1 = aboutinflater.inflate(R.layout.aboutmain1, null);
         final View about2 = aboutinflater.inflate(R.layout.aboutmain2, null);
         final View about3 = aboutinflater.inflate(R.layout.aboutmain3, null);
+        final View about4 = aboutinflater.inflate(R.layout.aboutmain4, null);
+        final View about5 = aboutinflater.inflate(R.layout.aboutmain5, null);
 
         final FrameLayout frmlayout = (FrameLayout) aboutView.findViewById(R.id.aboutplaceholder);
         frmlayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -415,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-                currentabout[0] = (currentabout[0] +1)%3;
+                currentabout[0] = (currentabout[0] +1)%5;
                 frmlayout.removeAllViews();
                 Fade mFade = new Fade(Fade.IN);
                 if(!isplaying)playButtonSound(context);
@@ -427,6 +430,12 @@ public class MainActivity extends AppCompatActivity {
                     frmlayout.addView(about3, 0);
                 }
                 else if(currentabout[0] == 2){
+                    frmlayout.addView(about4, 0);
+                }
+                else if(currentabout[0] == 3){
+                    frmlayout.addView(about5, 0);
+                }
+                else if(currentabout[0] == 4){
                     frmlayout.addView(about1, 0);
                 }
             }
@@ -436,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-                currentabout[0] = (currentabout[0] +2)%3;
+                currentabout[0] = (currentabout[0] +4)%5;
                 frmlayout.removeAllViews();
                 if(!isplaying)playButtonSound(context);
                 Fade mFade = new Fade(Fade.IN);
@@ -448,6 +457,12 @@ public class MainActivity extends AppCompatActivity {
                     frmlayout.addView(about3, 0);
                 }
                 else if(currentabout[0] == 2){
+                    frmlayout.addView(about4, 0);
+                }
+                else if(currentabout[0] == 3){
+                    frmlayout.addView(about5, 0);
+                }
+                else if(currentabout[0] == 4){
                     frmlayout.addView(about1, 0);
                 }
             }
@@ -724,6 +739,7 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     public void loadAd(){
+        //Put our Ad key below, since this is stored in a public repository we will use the test key below
         rewardedAd = new RewardedAd(this,
                 "ca-app-pub-3940256099942544/5224354917");
         RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {

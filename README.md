@@ -16,3 +16,6 @@ The app also comes with a minigame where one taps falling meteors to collect ext
 
 ![](minigamedemo.PNG)
 
+
+[Privacy Policy](https://calebturcotte.github.io/SpaceFarm/)
+
