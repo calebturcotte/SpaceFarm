@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private static SoundPool soundPool;
     public Context context;
     static long money;
+    static long trillionsmoney;
     private TextView view;
     static MediaPlayer music;
     static int currentvolume;
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     static int currentUniverse;
     static SharedPreferences settings;
     static boolean minigameAd;
+    boolean startbooster;
     static CountDownTimer minigameUseTimer;
     static long timedifference;
     boolean firstabout;
@@ -130,8 +132,6 @@ public class MainActivity extends AppCompatActivity {
         //Set up our moving background
         final ImageView backgroundOne = findViewById(R.id.background);
         final ImageView backgroundTwo = findViewById(R.id.background2);
-        //final ImageView backgroundThree = findViewById(R.id.background3);
-        //final ImageView backgroundFour = findViewById(R.id.background4);
         final ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setInterpolator(new LinearInterpolator());
@@ -144,14 +144,11 @@ public class MainActivity extends AppCompatActivity {
                 final float translationX = (width * progress);
                 backgroundOne.setTranslationX(translationX);
                 backgroundTwo.setTranslationX(translationX - width);
-                //backgroundThree.setTranslationX(translationX - 2*width);
-                //backgroundFour.setTranslationX(translationX - 3*width);
             }
         });
         animator.start();
 
         money = settings.getLong("money", money);
-        //view.setText(calculateCash(money));
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -303,6 +300,11 @@ public class MainActivity extends AppCompatActivity {
                 if(firstabout){
                     about();
                 }
+                //set remaining timer for booster if it exists
+                long boostertime = settings.getLong("booster",0L);
+                if(boostertime > 0L){
+                    startTimer(boostertime);
+                }
                 rightscroll.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
@@ -349,12 +351,6 @@ public class MainActivity extends AppCompatActivity {
             minigameAd = false;
             long minigameAdtime2 = minigameAdtime - timedifference;
             minigameUseTimer(minigameAdtime2);
-        }
-
-        //set remaining timer for booster if it exists
-        long boostertime = settings.getLong("booster",0L);
-        if(boostertime > 0L){
-            startTimer(boostertime);
         }
 
 
@@ -491,6 +487,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 money = 0;
+                                trillionsmoney = 0;
                                 view.setText(calculateCash(money));
                                 saveCash();
                                 universe1.reset();
@@ -774,13 +771,14 @@ public class MainActivity extends AppCompatActivity {
      * @param view
      */
     public void showAd(View view){
+        startbooster = false;
         if(this.rewardedAd.isLoaded()){
             RewardedAdCallback callback = new RewardedAdCallback(){
                 @Override
                 public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
                     //reward code
                     //Toast.makeText(MainActivity.this, "reward earned", Toast.LENGTH_SHORT).show();
-                    startTimer(60L);
+                    startbooster = true;
                 }
 
                 @Override
@@ -793,6 +791,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onRewardedAdClosed() {
                     super.onRewardedAdClosed();
                     loadAd();
+                    if(startbooster)startTimer(60L);
                     if(!isplaying)music.start();
                 }
             };
@@ -849,7 +848,15 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button).setVisibility(View.GONE);
         findViewById(R.id.twoxbuttonback).setVisibility(View.INVISIBLE);
         timerisrunning = true;
-        universe1.setBooster(2);
+        if(currentUniverse == 0){
+            universe1.setBooster(2);
+        }
+        else if(currentUniverse == 1){
+            universe2.setBooster(2);
+        }
+        else if(currentUniverse ==2){
+            universe3.setBooster(2);
+        }
 
 
         countDownTimer = new CountDownTimer(totalseconds * 1000, 500) {
@@ -874,7 +881,15 @@ public class MainActivity extends AppCompatActivity {
                 saveBooster(0L);
                 findViewById(R.id.button).setVisibility(View.VISIBLE);
                 findViewById(R.id.twoxbuttonback).setVisibility(View.VISIBLE);
-                universe1.setBooster(1);
+                if(currentUniverse == 0){
+                    universe1.setBooster(1);
+                }
+                else if(currentUniverse == 1){
+                    universe2.setBooster(1);
+                }
+                else if(currentUniverse ==2){
+                    universe3.setBooster(1);
+                }
             }
         }.start();
     }
@@ -890,17 +905,14 @@ public class MainActivity extends AppCompatActivity {
         // Replace the content of the container
         switch(currentUniverse) {
             case 0:
-                //universe3 = new Universe3(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe3);
                 currentUniverse = 2;
                 break;
             case 1:
-                //universe1 = new Universe1(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe1);
                 currentUniverse = currentUniverse -1;
                 break;
             case 2:
-                //universe2 = new Universe2(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe2);
                 currentUniverse = currentUniverse -1;
                 break;
@@ -922,15 +934,12 @@ public class MainActivity extends AppCompatActivity {
             case 0:
                 // we will create a transaction between fragments
                 // Replace the content of the container
-                //universe2 = new Universe2(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe2);
                 break;
             case 1:
-                //universe3 = new Universe3(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder,universe3);
                 break;
             case 2:
-                //universe1 = new Universe1(settings, MainActivity.this, context, textView);
                 fts.replace(R.id.placeholder, universe1);
                 break;
         }
@@ -957,8 +966,18 @@ public class MainActivity extends AppCompatActivity {
         else {
             return money + "$";
         }
+    }
 
-
+    /**
+     * Store an extra variable for our money so we can have higher values
+     * @param addedmoney money to be added to the pool
+     */
+    static public void addCash(long addedmoney){
+        long tempaddedmoney = addedmoney;
+        addedmoney = addedmoney % 1000000000000L;
+        money += addedmoney;
+        long addedtrillions = (tempaddedmoney + money)/1000000000000L;
+        trillionsmoney += addedtrillions;
     }
 
     /**

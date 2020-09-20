@@ -6,15 +6,19 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import java.util.Random;
 
 
 public class Farm {
@@ -36,7 +40,6 @@ public class Farm {
     private CountDownTimer time;
     private int booster;
     private ProgressBar bar;
-    private final TextView container;
     private LinearLayout autolayout;
     private SharedPreferences.Editor editor;
     private int universe;
@@ -45,42 +48,28 @@ public class Farm {
     private int maxmoney = 10;
     private ObjectAnimator baranimator;
     private long countdownvalue;
+    private TextView moneydisplay;
+    private Activity activity;
+    private Random random;
+    private ImageView farmbutton;
+    private ConstraintLayout framelayout;
+    private LayoutInflater inflater;
 
 
-    public Farm(int universe, final long scale, final int modifier, final ImageView farmbutton, Activity activity, LayoutInflater inflater){
+    public Farm(int universe, final long scale, final int modifier, final ImageView farmbutton, Activity activity, LayoutInflater inflater, TextView moneydisplay){
         this.scale = scale;
         this.universe = universe;
+        this.moneydisplay = moneydisplay;
+        this.activity = activity;
+        this.farmbutton = farmbutton;
+        this.inflater = inflater;
+        random = new Random();
         SharedPreferences sharedPrefs = activity.getApplicationContext().getSharedPreferences("MyPrefsFile", 0);
         money = sharedPrefs.getInt("money"+scale+":"+universe, 0);
         percent = sharedPrefs.getInt("timer"+scale+":"+universe,100);
         upkeep = false;
         this.modifier = modifier;
         booster = 1;
-        ConstraintLayout framelayout = activity.findViewById(R.id.zoomView);
-        autolayout = new LinearLayout(activity);
-        LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        autolayout.setLayoutParams(mParams);
-        autolayout.setOrientation(LinearLayout.VERTICAL);
-        autolayout.setPadding((int) farmbutton.getX() + farmbutton.getWidth()/4, (int) farmbutton.getY() + farmbutton.getHeight(), 0, 0);
-        container = new TextView(activity.getApplicationContext());
-        autolayout.addView(container);
-        container.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        container.setGravity(Gravity.CENTER);
-        container.setTextColor(Color.parseColor("#39FF14"));
-        FrameLayout barLayout = new FrameLayout(activity);
-        barText = new TextView(activity.getApplicationContext());
-        barText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-        barText.setGravity(Gravity.CENTER_HORIZONTAL);
-        barText.setTypeface(null,Typeface.BOLD);
-        bar = (ProgressBar ) inflater.inflate(R.layout.autoprogress, null);
-        bar.setLayoutParams(mParams);
-        barLayout.addView(bar);
-        barLayout.addView(barText);
-        autolayout.addView(barLayout);
-
-        autolayout.setVisibility(View.INVISIBLE);
-        framelayout.addView(autolayout);
-
         editor = sharedPrefs.edit();
 
         if(universe == 1){
@@ -92,26 +81,32 @@ public class Farm {
         else if(universe == 3){
             countdownvalue = (long)(scale/2.0);
         }
-        container.setText(String.valueOf(money));
     }
 
     /**
      * @return the money that the farm contains, either the scale itself or the farm value if enabled
      */
     public long contains(){
-        if(upkeep) {
-            if(money >= maxmoney){
-                barText.setText("");
-                bar.setProgress(0);
-                baranimator = ObjectAnimator.ofInt(bar, "progress", 100)
-                        .setDuration((countdownvalue));
-                baranimator.start();
-                time.start();
-            }
-            return (money * scale * modifier + scale*modifier)*booster;
-        }
-
         return scale*modifier*booster;
+    }
+
+    private long barcount(){
+        money = 0;
+        if(MainActivity.currentUniverse == universe-1){
+            createText(scale*modifier*booster);
+        }
+        return scale*modifier*booster;
+    }
+
+    /**
+     * shows our bar upon creation
+     */
+    public void showBar(){
+        autolayout.setVisibility(View.VISIBLE);
+        bar.setProgress((int)(100-percent));
+        baranimator = ObjectAnimator.ofInt(bar, "progress", (int)(100-percent), 100)
+                .setDuration((long)((countdownvalue)*((percent)/100.0)));
+        baranimator.start();
     }
 
     /**
@@ -120,13 +115,7 @@ public class Farm {
     public void enable(){
         if(!upkeep) {
             upkeep = true;
-            autolayout.setVisibility(View.VISIBLE);
-            container.setText(String.valueOf(money));
             if(money < maxmoney) {
-                bar.setProgress((int)(100-percent));
-                baranimator = ObjectAnimator.ofInt(bar, "progress", (int)(100-percent), 100)
-                        .setDuration((long)((countdownvalue)*((percent)/100.0)));
-                baranimator.start();
                 time = new CountDownTimer((long) ((countdownvalue)*((percent)/100.0)), 500) {
                     @Override
                     public void onTick(long millisUntilFinished) {
@@ -153,9 +142,10 @@ public class Farm {
                             barText.setText(R.string.max);
                             cancel();
                         }
-                        money++;
-                        container.setText(String.valueOf(money));
                         saveMoney();
+                        MainActivity.money += barcount();
+                        saveCash();
+                        moneydisplay.setText(MainActivity.calculateCash(MainActivity.money));
 
                     }
                 };
@@ -188,7 +178,7 @@ public class Farm {
     protected void reset(){
         money = 0;
         saveMoney();
-        container.setText(String.valueOf(money));
+        //container.setText(String.valueOf(money));
     }
 
     /**
@@ -241,9 +231,9 @@ public class Farm {
      */
     long sellCost(){
         if(upkeep) {
-            return (long) ((scale * Math.pow(1.15,modifier-1))*modifier)/4+scale*50;
+            return (long) ((scale * Math.pow(1.137,modifier-1))*modifier)/4+scale*50;
         }
-        return ((long) (scale * Math.pow(1.15,modifier-1))*modifier)/4;
+        return ((long) (scale * Math.pow(1.137,modifier-1))*modifier)/4;
     }
 
     /**
@@ -258,6 +248,14 @@ public class Farm {
      */
     private void saveMoney(){
         editor.putInt("money"+scale+":"+universe,money);
+        editor.apply();
+    }
+
+    /**
+     * saves the money we have to the system
+     */
+    private void saveCash(){
+        editor.putLong("money",MainActivity.money);
         editor.apply();
     }
 
@@ -296,9 +294,10 @@ public class Farm {
                     bar.setProgress(100);
                     barText.setText(R.string.max);
                 }
-                money++;
-                container.setText(String.valueOf(money));
                 saveMoney();
+                MainActivity.money += barcount();
+                saveCash();
+                moneydisplay.setText(MainActivity.calculateCash(MainActivity.money));
 
             }
         };
@@ -323,15 +322,91 @@ public class Farm {
         long remainingtime = secondssofar%((countdownvalue)+1);
 
         int totaltimes = (int) ((secondssofar) / (countdownvalue));
-        if((money + totaltimes) < 10) {
-            money = (money + totaltimes);
+        money = (money + totaltimes);
+        percent = (((remainingtime / (countdownvalue/1000.0)) * 100) + percent) % (101);
 
-            percent = (((remainingtime / (countdownvalue/1000.0)) * 100) + percent) % (101);
+        long earned = money * barcount();
+        if(MainActivity.currentUniverse == universe){
+            createText(earned);
         }
-        else {
-            money = 10;
-            percent = 100;
-        }
+
+        MainActivity.money += earned;
+        saveCash();
+        moneydisplay.setText(MainActivity.calculateCash(MainActivity.money));
         saveMoney();
+    }
+
+    /**
+     * Display text for amount earned by the autofarm
+     * @param earnings the earnings to display
+     */
+    public void createText(long earnings){
+        framelayout = activity.findViewById(R.id.zoomView);
+        final FrameLayout applayout = new FrameLayout(activity);
+        ConstraintLayout.LayoutParams mParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT*2);
+        final TextView popuptext = new TextView(activity);
+
+        applayout.setLayoutParams(mParams);
+        int ranx = random.nextInt(100);
+        int rany = random.nextInt(100);
+        applayout.setPadding((int)farmbutton.getX() + farmbutton.getWidth()/4 + ranx, (int) farmbutton.getY() + farmbutton.getHeight()/2 + rany, 0, 0);
+        popuptext.setLayoutParams(mParams);
+        String gain = "+"+MainActivity.calculateCash(earnings);
+        popuptext.setText(gain);
+        popuptext.setTextSize(25);
+        popuptext.setTextColor(Color.parseColor("#39FF14"));
+        popuptext.setShadowLayer(10,0,0,Color.BLACK);
+        applayout.addView(popuptext);
+        framelayout.addView(applayout);
+
+        Animation animSlide = AnimationUtils.loadAnimation(activity.getApplicationContext(), R.anim.slide);
+        animSlide.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                popuptext.setVisibility(View.GONE);
+                //Create handler on the current thread (UI thread)
+                Handler h = new Handler();
+                //Run a runnable after 100ms (after that time it is safe to remove the view)
+                h.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            framelayout.removeView(applayout);
+
+                        }
+                    }, 100);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        applayout.startAnimation(animSlide);
+
+    }
+
+    public void addAutoBar(LayoutInflater inflater){
+        framelayout = activity.findViewById(R.id.zoomView);
+        autolayout = new LinearLayout(activity);
+        LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        autolayout.setLayoutParams(mParams);
+        autolayout.setOrientation(LinearLayout.VERTICAL);
+        autolayout.setPadding((int) farmbutton.getX() + farmbutton.getWidth()/4, (int) farmbutton.getY() + farmbutton.getHeight()+ 20, 0, 0);
+        FrameLayout barLayout = new FrameLayout(activity);
+        barText = new TextView(activity.getApplicationContext());
+        barText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        barText.setGravity(Gravity.CENTER_HORIZONTAL);
+        barText.setTypeface(null,Typeface.BOLD);
+        bar = (ProgressBar ) inflater.inflate(R.layout.autoprogress, null);
+        bar.setLayoutParams(mParams);
+        barLayout.addView(bar);
+        barLayout.addView(barText);
+        autolayout.addView(barLayout);
+
+        autolayout.setVisibility(View.INVISIBLE);
+        framelayout.addView(autolayout);
+
     }
 }

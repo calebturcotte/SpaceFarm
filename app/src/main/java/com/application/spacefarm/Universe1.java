@@ -28,9 +28,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
-
-import com.application.spacefarm.R;
-
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -60,12 +57,6 @@ public class Universe1 extends Fragment {
         moneyview = view;
         firstcreate = true;
         popupcreated = false;
-    }
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
-        this.inflater = inflater;
         totalplanets=8;
         //initialize all content for the farms and money obtained
         farm = new ArrayList<>(totalplanets);
@@ -73,14 +64,19 @@ public class Universe1 extends Fragment {
         boughtfarm = new ArrayList<>(totalplanets);
         autofarm = new ArrayList<>(totalplanets);
         touchcontrol = new ArrayList<>(totalplanets);
+
         for (int i = 0; i < totalplanets; i++){
             int numbought = 1;
             modifier.add(settings.getInt("modifier"+i,numbought));
             autofarm.add(settings.getBoolean("auto"+i,false));
         }
 
+    }
 
 
+    @Override
+    public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
+        this.inflater = inflater;
         return inflater.inflate(R.layout.universe1, container, false);
     }
 
@@ -101,17 +97,21 @@ public class Universe1 extends Fragment {
             @SuppressLint("ClickableViewAccessibility")
             @Override
             public void onGlobalLayout() {
-                farm.add(new Farm(1,1, modifier.get(0), farmbutton[0], activity, inflater));
-                farm.add(new Farm(1,2, modifier.get(1), farmbutton[1], activity, inflater));
-                farm.add(new Farm(1,5, modifier.get(2), farmbutton[2], activity, inflater));
-                farm.add(new Farm(1,10, modifier.get(3), farmbutton[3], activity, inflater));
-                farm.add(new Farm(1,50, modifier.get(4), farmbutton[4], activity, inflater));
-                farm.add(new Farm(1,100, modifier.get(5), farmbutton[5], activity, inflater));
-                farm.add(new Farm(1,500, modifier.get(6), farmbutton[6], activity, inflater));
-                farm.add(new Farm(1,1000, modifier.get(7), farmbutton[7], activity, inflater));
+                if(firstcreate) {
+                    farm.add(new Farm(1, 1, modifier.get(0), farmbutton[0], activity, inflater, moneyview));
+                    farm.add(new Farm(1, 2, modifier.get(1), farmbutton[1], activity, inflater, moneyview));
+                    farm.add(new Farm(1, 5, modifier.get(2), farmbutton[2], activity, inflater, moneyview));
+                    farm.add(new Farm(1, 10, modifier.get(3), farmbutton[3], activity, inflater, moneyview));
+                    farm.add(new Farm(1, 50, modifier.get(4), farmbutton[4], activity, inflater, moneyview));
+                    farm.add(new Farm(1, 100, modifier.get(5), farmbutton[5], activity, inflater, moneyview));
+                    farm.add(new Farm(1, 500, modifier.get(6), farmbutton[6], activity, inflater, moneyview));
+                    farm.add(new Farm(1, 1000, modifier.get(7), farmbutton[7], activity, inflater, moneyview));
+                }
 
                 for (int i = 0; i < totalplanets; i++){
-                    touchcontrol.add(new FarmTouch(farmbutton[i],moneyview, farm.get(i), context, activity, boughtfarm.get(i)));
+                    if(touchcontrol.size() < totalplanets) {
+                        touchcontrol.add(i, new FarmTouch(farmbutton[i], moneyview, farm.get(i), context, activity, boughtfarm.get(i)));
+                    }
                     farmbutton[i].setOnTouchListener(touchcontrol.get(i));
                     satellites[i].setOnTouchListener(new View.OnTouchListener() {
                         @Override
@@ -124,11 +124,22 @@ public class Universe1 extends Fragment {
                         }
                     });
                     if (autofarm.get(i)) {
-                        if(firstcreate)farm.get(i).uncountedTime();
-                        farm.get(i).enable();
+                        if(firstcreate) {
+                            farm.get(i).uncountedTime();
+                            farm.get(i).enable();
+
+                        }
+
+                        farm.get(i).addAutoBar(inflater);
+                        farm.get(i).showBar();
+
                     }
+
                 }
                 if(MainActivity.timerisrunning){setBooster(2);}
+                else{
+                    setBooster(1);
+                }
                 firstcreate = false;
                 farmbutton[7].getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -418,6 +429,7 @@ public class Universe1 extends Fragment {
             pulse[satelliteselect].end();
         }
         saveAuto(satelliteselect, false);
+        autofarm.set(satelliteselect, false);
         String sell = "Planet #"+ (satelliteselect+1) + " was sold.";
         text.setText(sell);
         toast.show();
@@ -428,10 +440,13 @@ public class Universe1 extends Fragment {
     public void autoFarm(View v, int satelliteselect, Toast toast, TextView text, Button thisbutton){
         String auto;
         if(MainActivity.money >= farm.get(satelliteselect).getScale()*100) {
+            farm.get(satelliteselect).addAutoBar(inflater);
+            farm.get(satelliteselect).showBar();
             farm.get(satelliteselect).enable();
             MainActivity.money = MainActivity.money - farm.get(satelliteselect).getScale()*100;
             auto = "Planet #" + (satelliteselect + 1) + " can now be farmed automatically.";
             saveAuto(satelliteselect,true);
+            autofarm.set(satelliteselect,true);
             thisbutton.setVisibility(View.GONE);
         }
         else {
